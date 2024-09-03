@@ -57,12 +57,19 @@ class CreateOrder extends CreateRecord
     protected function getSteps(): array
     {
         return [
-            Step::make('Order Details')
+            Step::make(__('Order Details'))
                 ->schema([
                     Section::make()->schema(OrderResource::getDetailsFormSchema())->columns(),
                 ]),
 
-            Step::make('Order Items')
+            Step::make(__('Pizza'))
+                ->schema([
+                    Section::make()->schema([
+                        OrderResource::getItemsSecondRepeater(),
+                    ]),
+                ]),
+
+            Step::make(__('Order Items'))
                 ->schema([
                     Section::make()->schema([
                         OrderResource::getItemsRepeater(),

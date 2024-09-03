@@ -25,6 +25,21 @@ class CategoryResource extends Resource
 
     protected static ?string $navigationParentItem = 'Products';
 
+    public static function getNavigationLabel(): string
+    {
+        return __('Categories');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('Category');
+    }
+
+    public static function getPluralLabel(): ?string
+    {
+        return static::getNavigationLabel();
+    }
+
     protected static ?int $navigationSort = 1;
 
     public static function form(Form $form): Form
@@ -50,13 +65,13 @@ class CategoryResource extends Resource
                             ]),
 
                         Forms\Components\Select::make('parent_id')
-                            ->label('Parent')
+                            ->label(__('Parent'))
                             ->relationship('parent', 'name', fn (Builder $query) => $query->where('parent_id', null))
                             ->searchable()
-                            ->placeholder('Select parent category'),
+                            ->placeholder(__('Select parent category')),
 
                         Forms\Components\Toggle::make('is_visible')
-                            ->label('Visible to customers.')
+                            ->label(__('Visible to customers.'))
                             ->default(true),
 
                         Forms\Components\MarkdownEditor::make('description')
@@ -84,18 +99,18 @@ class CategoryResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')
-                    ->label('Name')
+                    ->label(__('Name'))
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('parent.name')
-                    ->label('Parent')
+                    ->label(__('Parent'))
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\IconColumn::make('is_visible')
-                    ->label('Visibility')
+                    ->label(__('Visibility'))
                     ->sortable(),
                 Tables\Columns\TextColumn::make('updated_at')
-                    ->label('Updated Date')
+                    ->label(__('Updated Date'))
                     ->date()
                     ->sortable(),
             ])

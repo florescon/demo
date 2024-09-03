@@ -32,7 +32,20 @@ class ProductResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-bolt';
 
-    protected static ?string $navigationLabel = 'Products';
+    public static function getNavigationLabel(): string
+    {
+        return __('Products');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('Product');
+    }
+
+    public static function getPluralLabel(): ?string
+    {
+        return static::getNavigationLabel();
+    }
 
     protected static ?int $navigationSort = 0;
 
@@ -236,7 +249,7 @@ class ProductResource extends Resource
                             ->label('Barcode (ISBN, UPC, GTIN, etc.)'),
                         TextConstraint::make('description'),
                         NumberConstraint::make('old_price')
-                            ->label('Compare at price')
+                            ->label(__('Compare at price'))
                             ->icon('heroicon-m-currency-dollar'),
                         NumberConstraint::make('price')
                             ->icon('heroicon-m-currency-dollar'),

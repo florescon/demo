@@ -38,6 +38,21 @@ class OrderResource extends Resource
 
     protected static ?int $navigationSort = 1;
 
+    public static function getNavigationLabel(): string
+    {
+        return __('Orders');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('Order');
+    }
+
+    public static function getPluralLabel(): ?string
+    {
+        return static::getNavigationLabel();
+    }
+
     public static function form(Form $form): Form
     {
         return $form
@@ -114,7 +129,7 @@ class OrderResource extends Resource
                             ->money(),
                     ]),
                 Tables\Columns\TextColumn::make('created_at')
-                    ->label('Order Date')
+                    ->label(__('Order Date'))
                     ->date()
                     ->toggleable(),
             ])
@@ -313,7 +328,7 @@ class OrderResource extends Resource
                     ->searchable(),
 
                 Forms\Components\TextInput::make('qty')
-                    ->label('Quantity')
+                    ->label(__('Quantity'))
                     ->numeric()
                     ->default(1)
                     ->columnSpan([

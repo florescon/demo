@@ -40,6 +40,12 @@ class Customer extends Model
         return $this->hasMany(Comment::class);
     }
 
+    /** @return HasMany<Comment> */
+    public function orders(): HasMany
+    {
+        return $this->hasMany(Order::class);
+    }
+
     /** @return HasManyThrough<Payment> */
     public function payments(): HasManyThrough
     {

@@ -1,0 +1,21 @@
+{
+    "Products": "Productos",
+    "Product": "Producto",
+    "Categories": "Categorías",
+    "Category": "Categoría",
+    "Orders": "Órdenes",
+    "Delivered": "Entregado",
+    "Order": "Orden",
+    "Image": "Imagen",
+    "Select parent category": "Selecciona una categoría",
+    "Visible to customers.": "Visible a clientes",
+    "Name": "Nombre",
+    "Visibility": "Visibilidad",
+    "Updated Date": "Fecha de Actualización",
+    "Parent": "Padre",
+    "Compare at price": "Comparar precios",
+    "Order Items": "Productos de la Orden",
+    "Order Details": "Detalles de la Orden",
+    "Quantity": "Cantidad"
+
+}

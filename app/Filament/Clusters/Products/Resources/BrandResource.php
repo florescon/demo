@@ -112,6 +112,7 @@ class BrandResource extends Resource
                     }),
             ])
             ->defaultSort('sort')
+            ->defaultPaginationPageOption(5)
             ->reorderable('sort');
     }
 
