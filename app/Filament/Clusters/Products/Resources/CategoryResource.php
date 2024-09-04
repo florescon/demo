@@ -51,6 +51,7 @@ class CategoryResource extends Resource
                         Forms\Components\Grid::make()
                             ->schema([
                                 Forms\Components\TextInput::make('name')
+                                    ->label(__('Name'))
                                     ->required()
                                     ->maxLength(255)
                                     ->live(onBlur: true)
@@ -75,7 +76,7 @@ class CategoryResource extends Resource
                             ->default(true),
 
                         Forms\Components\MarkdownEditor::make('description')
-                            ->label('Description'),
+                            ->label(__('Description')),
                     ])
                     ->columnSpan(['lg' => fn (?Category $record) => $record === null ? 3 : 2]),
                 Forms\Components\Section::make()

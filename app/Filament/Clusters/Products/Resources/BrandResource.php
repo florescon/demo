@@ -26,6 +26,21 @@ class BrandResource extends Resource
 
     protected static ?int $navigationSort = 2;
 
+    public static function getNavigationLabel(): string
+    {
+        return __('Brands');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('Brand');
+    }
+
+    public static function getPluralLabel(): ?string
+    {
+        return static::getNavigationLabel();
+    }
+
     public static function form(Form $form): Form
     {
         return $form
@@ -35,6 +50,7 @@ class BrandResource extends Resource
                         Forms\Components\Grid::make()
                             ->schema([
                                 Forms\Components\TextInput::make('name')
+                                    ->label(__('Name'))
                                     ->required()
                                     ->maxLength(255)
                                     ->live(onBlur: true)
@@ -48,16 +64,17 @@ class BrandResource extends Resource
                                     ->unique(Brand::class, 'slug', ignoreRecord: true),
                             ]),
                         Forms\Components\TextInput::make('website')
+                            ->label(__('Website'))
                             ->required()
                             ->maxLength(255)
                             ->url(),
 
                         Forms\Components\Toggle::make('is_visible')
-                            ->label('Visible to customers.')
+                            ->label(__('Visible to customers.'))
                             ->default(true),
 
                         Forms\Components\MarkdownEditor::make('description')
-                            ->label('Description'),
+                            ->label(__('Description')),
                     ])
                     ->columnSpan(['lg' => fn (?Brand $record) => $record === null ? 3 : 2]),
                 Forms\Components\Section::make()
@@ -81,18 +98,18 @@ class BrandResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')
-                    ->label('Name')
+                    ->label(__('Name'))
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('website')
-                    ->label('Website')
+                    ->label(__('Website'))
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\IconColumn::make('is_visible')
-                    ->label('Visibility')
+                    ->label(__('Visibility'))
                     ->sortable(),
                 Tables\Columns\TextColumn::make('updated_at')
-                    ->label('Updated Date')
+                    ->label(__('Updated Date'))
                     ->date()
                     ->sortable(),
             ])

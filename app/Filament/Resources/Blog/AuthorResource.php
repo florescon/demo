@@ -13,6 +13,8 @@ use Filament\Tables\Table;
 
 class AuthorResource extends Resource
 {
+    protected static bool $shouldRegisterNavigation = false;
+
     protected static ?string $model = Author::class;
 
     protected static ?string $slug = 'blog/authors';

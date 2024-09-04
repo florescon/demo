@@ -15,6 +15,7 @@ class ListBrands extends ListRecords
     {
         return [
             Actions\ExportAction::make()
+                ->label(__('Export'))
                 ->exporter(BrandExporter::class),
             Actions\CreateAction::make(),
         ];

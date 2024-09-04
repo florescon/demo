@@ -17,6 +17,8 @@ use Illuminate\Support\Str;
 
 class CategoryResource extends Resource
 {
+    protected static bool $shouldRegisterNavigation = false;
+
     protected static ?string $model = Category::class;
 
     protected static ?string $slug = 'blog/categories';

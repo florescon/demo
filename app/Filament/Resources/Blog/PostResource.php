@@ -22,6 +22,8 @@ use Illuminate\Support\Str;
 
 class PostResource extends Resource
 {
+    protected static bool $shouldRegisterNavigation = false;
+
     protected static ?string $model = Post::class;
 
     protected static ?string $slug = 'blog/posts';

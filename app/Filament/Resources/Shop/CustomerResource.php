@@ -29,6 +29,21 @@ class CustomerResource extends Resource
 
     protected static ?int $navigationSort = 2;
 
+    public static function getNavigationLabel(): string
+    {
+        return __('Customers');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('Customer');
+    }
+
+    public static function getPluralLabel(): ?string
+    {
+        return static::getNavigationLabel();
+    }
+
     public static function form(Form $form): Form
     {
         return $form
@@ -36,20 +51,23 @@ class CustomerResource extends Resource
                 Forms\Components\Section::make()
                     ->schema([
                         Forms\Components\TextInput::make('name')
+                            ->label(__('Name'))
                             ->maxLength(255)
                             ->required(),
 
                         Forms\Components\TextInput::make('email')
-                            ->label('Email address')
+                            ->label(__('Email address'))
                             ->required()
                             ->email()
                             ->maxLength(255)
                             ->unique(ignoreRecord: true),
 
                         Forms\Components\TextInput::make('phone')
+                            ->label(__('Phone'))
                             ->maxLength(255),
 
                         Forms\Components\DatePicker::make('birthday')
+                            ->label(__('Birthday'))
                             ->maxDate('today'),
                     ])
                     ->columns(2)
@@ -58,11 +76,11 @@ class CustomerResource extends Resource
                 Forms\Components\Section::make()
                     ->schema([
                         Forms\Components\Placeholder::make('created_at')
-                            ->label('Created at')
+                            ->label(__('Created at'))
                             ->content(fn (Customer $record): ?string => $record->created_at?->diffForHumans()),
 
                         Forms\Components\Placeholder::make('updated_at')
-                            ->label('Last modified at')
+                            ->label(__('Last modified at'))
                             ->content(fn (Customer $record): ?string => $record->updated_at?->diffForHumans()),
                     ])
                     ->columnSpan(['lg' => 1])
@@ -76,15 +94,18 @@ class CustomerResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')
+                    ->label(__('Name'))
                     ->searchable(isIndividual: true)
                     ->sortable(),
                 Tables\Columns\TextColumn::make('email')
-                    ->label('Email address')
+                    ->label(__('Email address'))
                     ->searchable(isIndividual: true, isGlobal: false)
                     ->sortable(),
                 Tables\Columns\TextColumn::make('country')
+                    ->label(__('Country'))
                     ->getStateUsing(fn ($record): ?string => Country::find($record->addresses->first()?->country)?->name ?? null),
                 Tables\Columns\TextColumn::make('phone')
+                    ->label(__('Phone'))
                     ->searchable()
                     ->sortable(),
             ])

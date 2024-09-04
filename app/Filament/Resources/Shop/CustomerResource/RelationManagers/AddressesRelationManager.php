@@ -19,15 +19,24 @@ class AddressesRelationManager extends RelationManager
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('street'),
+                Forms\Components\TextInput::make('street')
+                ->label(__('Street'))
+                ,
 
-                Forms\Components\TextInput::make('zip'),
+                Forms\Components\TextInput::make('zip')
+                ->label(__('CP'))
+                ,
 
-                Forms\Components\TextInput::make('city'),
+                Forms\Components\TextInput::make('city')
+                ->label(__('City'))
+                ,
 
-                Forms\Components\TextInput::make('state'),
+                Forms\Components\TextInput::make('state')
+                ->label(__('State'))
+                ,
 
                 Forms\Components\Select::make('country')
+                    ->label(__('Country'))
                     ->searchable()
                     ->getSearchResultsUsing(fn (string $query) => Country::where('name', 'like', "%{$query}%")->pluck('name', 'id'))
                     ->getOptionLabelUsing(fn ($value): ?string => Country::firstWhere('id', $value)?->getAttribute('name')),
@@ -38,13 +47,20 @@ class AddressesRelationManager extends RelationManager
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('street'),
+                Tables\Columns\TextColumn::make('street')
+                ->label(__('Street'))
+                ,
 
-                Tables\Columns\TextColumn::make('zip'),
+                Tables\Columns\TextColumn::make('zip')
+                ->label(__('CP'))
+                ,
 
-                Tables\Columns\TextColumn::make('city'),
+                Tables\Columns\TextColumn::make('city')
+                ->label(__('City'))
+                ,
 
                 Tables\Columns\TextColumn::make('country')
+                    ->label(__('Country'))
                     ->formatStateUsing(fn ($state): ?string => Country::find($state)?->name ?? null),
             ])
             ->filters([

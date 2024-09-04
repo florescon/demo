@@ -63,7 +63,7 @@ class OrderResource extends Resource
                             ->schema(static::getDetailsFormSchema())
                             ->columns(2),
 
-                        Forms\Components\Section::make('Order items')
+                        Forms\Components\Section::make(__('Order items'))
                             ->headerActions([
                                 Action::make('reset')
                                     ->modalHeading('Are you sure?')
@@ -81,11 +81,11 @@ class OrderResource extends Resource
                 Forms\Components\Section::make()
                     ->schema([
                         Forms\Components\Placeholder::make('created_at')
-                            ->label('Created at')
+                            ->label(__('Created at'))
                             ->content(fn (Order $record): ?string => $record->created_at?->diffForHumans()),
 
                         Forms\Components\Placeholder::make('updated_at')
-                            ->label('Last modified at')
+                            ->label(__('Last modified at'))
                             ->content(fn (Order $record): ?string => $record->updated_at?->diffForHumans()),
                     ])
                     ->columnSpan(['lg' => 1])
@@ -99,20 +99,21 @@ class OrderResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('number')
+                    ->label(__('Number'))
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('customer.name')
+                    ->label(__('Customer'))
                     ->searchable()
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('status')
+                    ->label(__('Status'))
                     ->badge(),
-                Tables\Columns\TextColumn::make('currency')
-                    ->getStateUsing(fn ($record): ?string => Currency::find($record->currency)?->name ?? null)
-                    ->searchable()
-                    ->sortable()
-                    ->toggleable(),
+                Tables\Columns\TextColumn::make('created_at_time')
+                    ->label(__('Hour')),
                 Tables\Columns\TextColumn::make('total_price')
+                    ->label(__('Total'))
                     ->searchable()
                     ->sortable()
                     ->summarize([
@@ -120,7 +121,7 @@ class OrderResource extends Resource
                             ->money(),
                     ]),
                 Tables\Columns\TextColumn::make('shipping_price')
-                    ->label('Shipping cost')
+                    ->label(__('Shipping cost'))
                     ->searchable()
                     ->sortable()
                     ->toggleable()
@@ -133,14 +134,17 @@ class OrderResource extends Resource
                     ->date()
                     ->toggleable(),
             ])
+            ->defaultSort('created_at', 'desc')
             ->filters([
                 Tables\Filters\TrashedFilter::make(),
 
                 Tables\Filters\Filter::make('created_at')
                     ->form([
                         Forms\Components\DatePicker::make('created_from')
+                            ->label(__('Created from'))
                             ->placeholder(fn ($state): string => 'Dec 18, ' . now()->subYear()->format('Y')),
                         Forms\Components\DatePicker::make('created_until')
+                            ->label(__('Created until'))
                             ->placeholder(fn ($state): string => now()->format('M d, Y')),
                     ])
                     ->query(function (Builder $query, array $data): Builder {
@@ -180,7 +184,7 @@ class OrderResource extends Resource
             ])
             ->groups([
                 Tables\Grouping\Group::make('created_at')
-                    ->label('Order Date')
+                    ->label(__('Created'))
                     ->date()
                     ->collapsible(),
             ]);
@@ -248,6 +252,7 @@ class OrderResource extends Resource
     {
         return [
             Forms\Components\TextInput::make('number')
+                ->label(__('Number'))
                 ->default('OR-' . random_int(100000, 999999))
                 ->disabled()
                 ->dehydrated()
@@ -256,47 +261,54 @@ class OrderResource extends Resource
                 ->unique(Order::class, 'number', ignoreRecord: true),
 
             Forms\Components\Select::make('shop_customer_id')
+                ->label(__('Customer'))
                 ->relationship('customer', 'name')
                 ->searchable()
                 ->required()
                 ->createOptionForm([
                     Forms\Components\TextInput::make('name')
+                        ->label(__('Name'))
                         ->required()
                         ->maxLength(255),
 
                     Forms\Components\TextInput::make('email')
-                        ->label('Email address')
+                        ->label(__('Email address'))
                         ->required()
                         ->email()
                         ->maxLength(255)
                         ->unique(),
 
                     Forms\Components\TextInput::make('phone')
+                        ->label(__('Phone'))
                         ->maxLength(255),
 
                     Forms\Components\Select::make('gender')
-                        ->placeholder('Select gender')
+                        ->label(__('Gender'))
+                        ->placeholder(__('Select gender'))
                         ->options([
-                            'male' => 'Male',
-                            'female' => 'Female',
+                            'male' => __('Male'),
+                            'female' => __('Female'),
                         ])
                         ->required()
                         ->native(false),
                 ])
                 ->createOptionAction(function (Action $action) {
                     return $action
-                        ->modalHeading('Create customer')
-                        ->modalSubmitActionLabel('Create customer')
+                        ->modalHeading(__('Create customer'))
+                        ->modalSubmitActionLabel(__('Create customer'))
                         ->modalWidth('lg');
                 }),
 
             Forms\Components\ToggleButtons::make('status')
+                ->label(__('Status'))
                 ->inline()
                 ->options(OrderStatus::class)
                 ->required(),
 
             Forms\Components\Select::make('currency')
+                ->label(__('Moneda'))
                 ->searchable()
+                ->default('mxn')
                 ->getSearchResultsUsing(fn (string $query) => Currency::where('name', 'like', "%{$query}%")->pluck('name', 'id'))
                 ->getOptionLabelUsing(fn ($value): ?string => Currency::firstWhere('id', $value)?->getAttribute('name'))
                 ->required(),
@@ -305,6 +317,7 @@ class OrderResource extends Resource
                 ->columnSpan('full'),
 
             Forms\Components\MarkdownEditor::make('notes')
+                ->label(__('Notes'))
                 ->columnSpan('full'),
         ];
     }
@@ -312,10 +325,11 @@ class OrderResource extends Resource
     public static function getItemsRepeater(): Repeater
     {
         return Repeater::make('items')
+            ->label(__('items'))
             ->relationship()
             ->schema([
                 Forms\Components\Select::make('shop_product_id')
-                    ->label('Product')
+                    ->label(__('Product'))
                     ->options(Product::query()->pluck('name', 'id'))
                     ->required()
                     ->reactive()
@@ -337,7 +351,7 @@ class OrderResource extends Resource
                     ->required(),
 
                 Forms\Components\TextInput::make('unit_price')
-                    ->label('Unit Price')
+                    ->label(__('Unit Price'))
                     ->disabled()
                     ->dehydrated()
                     ->numeric()
@@ -348,7 +362,7 @@ class OrderResource extends Resource
             ])
             ->extraItemActions([
                 Action::make('openProduct')
-                    ->tooltip('Open product')
+                    ->tooltip(__('Open product'))
                     ->icon('heroicon-m-arrow-top-right-on-square')
                     ->url(function (array $arguments, Repeater $component): ?string {
                         $itemData = $component->getRawItemState($arguments['item']);

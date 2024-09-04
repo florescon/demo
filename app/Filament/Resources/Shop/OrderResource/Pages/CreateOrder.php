@@ -43,7 +43,7 @@ class CreateOrder extends CreateRecord
         $user = auth()->user();
 
         Notification::make()
-            ->title('New order')
+            ->title(__('New order'))
             ->icon('heroicon-o-shopping-bag')
             ->body("**{$order->customer?->name} ordered {$order->items->count()} products.**")
             ->actions([
@@ -60,13 +60,6 @@ class CreateOrder extends CreateRecord
             Step::make(__('Order Details'))
                 ->schema([
                     Section::make()->schema(OrderResource::getDetailsFormSchema())->columns(),
-                ]),
-
-            Step::make(__('Pizza'))
-                ->schema([
-                    Section::make()->schema([
-                        OrderResource::getItemsSecondRepeater(),
-                    ]),
                 ]),
 
             Step::make(__('Order Items'))

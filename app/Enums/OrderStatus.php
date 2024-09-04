@@ -21,11 +21,11 @@ enum OrderStatus: string implements HasColor, HasIcon, HasLabel
     public function getLabel(): string
     {
         return match ($this) {
-            self::New => 'New',
-            self::Processing => 'Processing',
-            self::Shipped => 'Shipped',
-            self::Delivered => 'Delivered',
-            self::Cancelled => 'Cancelled',
+            self::New => __('New'),
+            self::Processing => __('Processing'),
+            self::Shipped => __('Shipped'),
+            self::Delivered => __('Delivered'),
+            self::Cancelled => __('Cancelled'),
         };
     }
 

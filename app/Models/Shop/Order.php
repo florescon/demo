@@ -60,4 +60,9 @@ class Order extends Model
     {
         return $this->hasMany(Payment::class);
     }
+
+    public function getCreatedAtTimeAttribute()
+    {
+        return $this->created_at ? $this->created_at->format('H:i') : null;
+    }
 }
