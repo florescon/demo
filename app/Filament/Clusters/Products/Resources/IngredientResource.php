@@ -53,27 +53,28 @@ class IngredientResource extends Resource
                         Forms\Components\Grid::make()
                             ->schema([
                                 Forms\Components\TextInput::make('name')
+                                    ->label(__('Name'))
                                     ->required()
                                     ->maxLength(255)
                                     ->live(onBlur: true),
                             ]),
 
                         Forms\Components\Toggle::make('is_visible')
-                            ->label('Visible to customers.')
+                            ->label(__('Visible to customers.'))
                             ->default(true),
 
                         Forms\Components\MarkdownEditor::make('description')
-                            ->label('Description'),
+                            ->label(__('Description')),
                     ])
                     ->columnSpan(['lg' => fn (?Ingredient $record) => $record === null ? 3 : 2]),
                 Forms\Components\Section::make()
                     ->schema([
                         Forms\Components\Placeholder::make('created_at')
-                            ->label('Created at')
+                            ->label(__('Created at'))
                             ->content(fn (Ingredient $record): ?string => $record->created_at?->diffForHumans()),
 
                         Forms\Components\Placeholder::make('updated_at')
-                            ->label('Last modified at')
+                            ->label(__('Last modified at'))
                             ->content(fn (Ingredient $record): ?string => $record->updated_at?->diffForHumans()),
                     ])
                     ->columnSpan(['lg' => 1])

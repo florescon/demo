@@ -45,9 +45,10 @@ class CreateOrder extends CreateRecord
         Notification::make()
             ->title(__('New order'))
             ->icon('heroicon-o-shopping-bag')
-            ->body("**{$order->customer?->name} ordered {$order->items->count()} products.**")
+            ->body("**{$order->customer?->name} ordenó {$order->items->count()} productos.**")
             ->actions([
                 Action::make('View')
+                    ->label(__('View'))
                     ->url(OrderResource::getUrl('edit', ['record' => $order])),
             ])
             ->sendToDatabase($user);

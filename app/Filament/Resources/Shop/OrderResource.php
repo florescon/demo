@@ -80,6 +80,10 @@ class OrderResource extends Resource
 
                 Forms\Components\Section::make()
                     ->schema([
+                        Forms\Components\Placeholder::make('created_at_time')
+                            ->label(__('Hour'))
+                            ->content(fn (Order $record): ?string => $record->created_at_time),
+
                         Forms\Components\Placeholder::make('created_at')
                             ->label(__('Created at'))
                             ->content(fn (Order $record): ?string => $record->created_at?->diffForHumans()),
@@ -229,7 +233,7 @@ class OrderResource extends Resource
         /** @var Order $record */
 
         return [
-            'Customer' => optional($record->customer)->name,
+            __('Customer') => optional($record->customer)->name,
         ];
     }
 
@@ -264,7 +268,7 @@ class OrderResource extends Resource
                 ->label(__('Customer'))
                 ->relationship('customer', 'name')
                 ->searchable()
-                ->required()
+                // ->required()
                 ->createOptionForm([
                     Forms\Components\TextInput::make('name')
                         ->label(__('Name'))
@@ -303,7 +307,8 @@ class OrderResource extends Resource
                 ->label(__('Status'))
                 ->inline()
                 ->options(OrderStatus::class)
-                ->required(),
+                // ->required(),
+                ,
 
             Forms\Components\Select::make('currency')
                 ->label(__('Moneda'))

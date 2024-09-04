@@ -71,7 +71,7 @@ class DatabaseSeeder extends Seeder
             ->sequence(fn ($sequence) => ['shop_brand_id' => $brands->random(1)->first()->id])
             ->hasAttached($categories->random(rand(3, 6)), ['created_at' => now(), 'updated_at' => now()])
             ->has(
-                Comment::factory()->count(rand(10, 20))
+                Comment::factory()->count(rand(1, 5))
                     ->state(fn (array $attributes, Product $product) => ['customer_id' => $customers->random(1)->first()->id]),
             )
             ->create());
@@ -113,7 +113,7 @@ class DatabaseSeeder extends Seeder
             ->has(
                 Post::factory()->count(5)
                     ->has(
-                        Comment::factory()->count(rand(5, 10))
+                        Comment::factory()->count(rand(2, 3))
                             ->state(fn (array $attributes, Post $post) => ['customer_id' => $customers->random(1)->first()->id]),
                     )
                     ->state(fn (array $attributes, Author $author) => ['blog_category_id' => $blogCategories->random(1)->first()->id]),

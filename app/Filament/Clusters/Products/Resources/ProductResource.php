@@ -325,7 +325,7 @@ class ProductResource extends Resource
         /** @var Product $record */
 
         return [
-            'Brand' => optional($record->brand)->name,
+            __('Brand') => optional($record->brand)->name,
         ];
     }
 
