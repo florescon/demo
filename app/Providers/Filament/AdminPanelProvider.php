@@ -45,6 +45,7 @@ class AdminPanelProvider extends PanelProvider
                 'Shop',
                 'Blog',
             ])
+            ->sidebarFullyCollapsibleOnDesktop()
             ->databaseNotifications()
             ->middleware([
                 EncryptCookies::class,
