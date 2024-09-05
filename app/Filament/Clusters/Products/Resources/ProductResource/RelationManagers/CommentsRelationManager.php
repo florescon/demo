@@ -12,6 +12,7 @@ use Filament\Notifications\Notification;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Model;
 
 class CommentsRelationManager extends RelationManager
 {
@@ -19,26 +20,43 @@ class CommentsRelationManager extends RelationManager
 
     protected static ?string $recordTitleAttribute = 'title';
 
+    public static function getTitle(Model $ownerRecord, string $pageClass): string
+    {
+        return __('Comments');
+    }    
+
+    public static function getModelLabel(): string
+    {
+        return __('Comment');
+    }
+
+    public static function getPluralLabel(): ?string
+    {
+        return static::getNavigationLabel();
+    }
+
     public function form(Form $form): Form
     {
         return $form
             ->columns(1)
             ->schema([
                 Forms\Components\TextInput::make('title')
+                    ->label(__('Title'))
                     ->required(),
 
                 Forms\Components\Select::make('customer_id')
+                    ->label(__('Customer'))
                     ->relationship('customer', 'name')
                     ->searchable()
                     ->required(),
 
                 Forms\Components\Toggle::make('is_visible')
-                    ->label('Approved for public')
+                    ->label(__('Approved for public'))
                     ->default(true),
 
                 Forms\Components\MarkdownEditor::make('content')
                     ->required()
-                    ->label('Content'),
+                    ->label(__('Content')),
             ]);
     }
 
@@ -61,17 +79,17 @@ class CommentsRelationManager extends RelationManager
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('title')
-                    ->label('Title')
+                    ->label(__('Title'))
                     ->searchable()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('customer.name')
-                    ->label('Customer')
+                    ->label(__('Customer'))
                     ->searchable()
                     ->sortable(),
 
                 Tables\Columns\IconColumn::make('is_visible')
-                    ->label('Visibility')
+                    ->label(__('Visibility'))
                     ->sortable(),
             ])
             ->filters([

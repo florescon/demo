@@ -15,6 +15,7 @@ class ListCategories extends ListRecords
     {
         return [
             Actions\ImportAction::make()
+                ->label(__('Import'))
                 ->importer(CategoryImporter::class),
             Actions\CreateAction::make(),
         ];

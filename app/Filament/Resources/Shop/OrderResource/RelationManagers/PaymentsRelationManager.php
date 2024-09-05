@@ -9,6 +9,7 @@ use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Support\Str;
+use Illuminate\Database\Eloquent\Model;
 
 class PaymentsRelationManager extends RelationManager
 {
@@ -16,10 +17,10 @@ class PaymentsRelationManager extends RelationManager
 
     protected static ?string $recordTitleAttribute = 'reference';
 
-    public static function getNavigationLabel(): string
+    public static function getTitle(Model $ownerRecord, string $pageClass): string
     {
         return __('Payments');
-    }
+    }    
 
     public static function getModelLabel(): string
     {

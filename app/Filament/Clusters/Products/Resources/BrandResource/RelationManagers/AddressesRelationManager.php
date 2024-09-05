@@ -8,12 +8,28 @@ use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Squire\Models\Country;
+use Illuminate\Database\Eloquent\Model;
 
 class AddressesRelationManager extends RelationManager
 {
     protected static string $relationship = 'addresses';
 
     protected static ?string $recordTitleAttribute = 'full_address';
+
+    public static function getTitle(Model $ownerRecord, string $pageClass): string
+    {
+        return __('Addresses');
+    }    
+
+    public static function getModelLabel(): string
+    {
+        return __('Address');
+    }
+
+    public static function getPluralLabel(): ?string
+    {
+        return static::getNavigationLabel();
+    }
 
     public function form(Form $form): Form
     {

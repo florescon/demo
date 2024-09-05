@@ -11,12 +11,28 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Str;
+use Illuminate\Database\Eloquent\Model;
 
 class PaymentsRelationManager extends RelationManager
 {
     protected static string $relationship = 'payments';
 
     protected static ?string $recordTitleAttribute = 'reference';
+
+    public static function getTitle(Model $ownerRecord, string $pageClass): string
+    {
+        return __('Payments');
+    }    
+
+    public static function getModelLabel(): string
+    {
+        return __('Payment');
+    }
+
+    public static function getPluralLabel(): ?string
+    {
+        return static::getNavigationLabel();
+    }
 
     public function form(Form $form): Form
     {
