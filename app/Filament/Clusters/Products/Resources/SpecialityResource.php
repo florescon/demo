@@ -2,10 +2,12 @@
 
 namespace App\Filament\Clusters\Products\Resources;
 
-use App\Filament\Clusters\Products;
-use App\Filament\Clusters\Products\Resources\IngredientResource\Pages;
-use App\Filament\Clusters\Products\Resources\IngredientResource\RelationManagers;
 use App\Models\Shop\Ingredient;
+use App\Models\Shop\Element;
+use App\Filament\Clusters\Products;
+use App\Filament\Clusters\Products\Resources\SpecialityResource\Pages;
+use App\Filament\Clusters\Products\Resources\SpecialityResource\RelationManagers;
+use App\Models\Shop\Speciality;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -15,9 +17,9 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Str;
 
-class IngredientResource extends Resource
+class SpecialityResource extends Resource
 {
-    protected static ?string $model = Ingredient::class;
+    protected static ?string $model = Speciality::class;
 
     protected static ?string $recordTitleAttribute = 'name';
 
@@ -31,12 +33,12 @@ class IngredientResource extends Resource
 
     public static function getNavigationLabel(): string
     {
-        return __('Ingredients');
+        return __('Specialties');
     }
 
     public static function getModelLabel(): string
     {
-        return __('Ingredient');
+        return __('Speciality');
     }
 
     public static function getPluralLabel(): ?string
@@ -59,31 +61,33 @@ class IngredientResource extends Resource
                                     ->live(onBlur: true),
                             ]),
 
-                        Forms\Components\Toggle::make('is_visible')
-                            ->label(__('Visible to customers.'))
-                            ->default(true),
-
-                        Forms\Components\MarkdownEditor::make('description')
-                            ->label(__('Description')),
+                        Forms\Components\MarkdownEditor::make('notes')
+                            ->label(__('Note')),
                     ])
-                    ->columnSpan(['lg' => fn (?Ingredient $record) => $record === null ? 3 : 2]),
+                    ->columnSpan(['lg' => fn (?Speciality $record) => $record === null ? 3 : 2]),
                 Forms\Components\Section::make()
                     ->schema([
                         Forms\Components\Placeholder::make('created_at')
                             ->label(__('Created at'))
-                            ->content(fn (Ingredient $record): ?string => $record->created_at?->diffForHumans()),
+                            ->content(fn (Speciality $record): ?string => $record->created_at?->diffForHumans()),
 
                         Forms\Components\Placeholder::make('updated_at')
                             ->label(__('Last modified at'))
-                            ->content(fn (Ingredient $record): ?string => $record->updated_at?->diffForHumans()),
+                            ->content(fn (Speciality $record): ?string => $record->updated_at?->diffForHumans()),
                     ])
                     ->columnSpan(['lg' => 1])
-                    ->hidden(fn (?Ingredient $record) => $record === null),
+                    ->hidden(fn (?Speciality $record) => $record === null),
+                Forms\Components\CheckboxList::make('ingredients')
+                    ->label(__('Ingredients'))
+                    ->relationship('ingredients', 'name') // Configura el campo de la relación
+                    ->options(Ingredient::all()->pluck('name', 'id')) // Obtén las opciones de la base de datos
+                    ->searchable()
+                    ->columns(2), // Opcional: número de columnas para mostrar las casillas
             ])
             ->columns(3);
     }
 
-    public static function table(Table $table): Table
+     public static function table(Table $table): Table
     {
         return $table
             ->columns([
@@ -91,8 +95,17 @@ class IngredientResource extends Resource
                     ->label(__('Name'))
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\IconColumn::make('is_visible')
-                    ->label(__('Visibility'))
+
+                Tables\Columns\TextColumn::make('ingredients.name')
+                    ->label(__('Ingredients'))
+                    ->listWithLineBreaks()
+                    ->limitList(2)
+                    ->searchable()
+                    ->expandableLimitedList(),
+
+                Tables\Columns\TextColumn::make('notes')
+                    ->label(__('Notes'))
+                    ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('updated_at')
                     ->label(__('Updated Date'))
@@ -110,9 +123,7 @@ class IngredientResource extends Resource
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ])
-            ->defaultSort('sort')
-            ->defaultPaginationPageOption(10)
-            ->reorderable('sort');
+            ->defaultPaginationPageOption(10);
     }
 
     public static function getRelations(): array
@@ -125,9 +136,9 @@ class IngredientResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListIngredients::route('/'),
-            'create' => Pages\CreateIngredient::route('/create'),
-            'edit' => Pages\EditIngredient::route('/{record}/edit'),
+            'index' => Pages\ListSpecialities::route('/'),
+            'create' => Pages\CreateSpeciality::route('/create'),
+            'edit' => Pages\EditSpeciality::route('/{record}/edit'),
         ];
     }
 }

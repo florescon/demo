@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Shop;
 
 use App\Enums\OrderStatus;
+use App\Enums\PropertyType;
 use App\Filament\Clusters\Products\Resources\ProductResource;
 use App\Filament\Resources\Shop\OrderResource\Pages;
 use App\Filament\Resources\Shop\OrderResource\RelationManagers;
@@ -325,6 +326,23 @@ class OrderResource extends Resource
                 ->label(__('Notes'))
                 ->columnSpan('full'),
         ];
+    }
+
+    public static function getItemsRepeaterSecond(): Repeater
+    {
+        return Repeater::make('items')
+            ->columnSpan(2)
+            ->columns()
+            ->schema([
+                Forms\Components\Select::make('shop_product_id')
+                    ->options(Product::pluck('name', 'id')->toArray())
+                    ->disableOptionsWhenSelectedInSiblingRepeaterItems()
+                    ->live()
+                    ->afterStateUpdated(function (Forms\Set $set) {
+                        $set('quantity', null);
+                    }),
+                Forms\Components\TextInput::make('quantity'),
+        ]);
     }
 
     public static function getItemsRepeater(): Repeater

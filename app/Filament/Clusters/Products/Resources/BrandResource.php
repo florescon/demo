@@ -52,7 +52,7 @@ class BrandResource extends Resource
                                 Forms\Components\TextInput::make('name')
                                     ->label(__('Name'))
                                     ->required()
-                                    ->maxLength(255)
+                                    ->maxLength(50)
                                     ->live(onBlur: true)
                                     ->afterStateUpdated(fn (string $operation, $state, Forms\Set $set) => $operation === 'create' ? $set('slug', Str::slug($state)) : null),
 

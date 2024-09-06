@@ -66,7 +66,7 @@ class CreateOrder extends CreateRecord
             Step::make(__('Order Items'))
                 ->schema([
                     Section::make()->schema([
-                        OrderResource::getItemsRepeater(),
+                        OrderResource::getItemsRepeaterSecond(),
                     ]),
                 ]),
         ];
