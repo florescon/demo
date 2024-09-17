@@ -61,6 +61,31 @@ class SpecialityResource extends Resource
                                     ->live(onBlur: true),
                             ]),
 
+
+                        Forms\Components\Grid::make()
+                            ->schema([
+
+                                Forms\Components\TextInput::make('price_small')
+                                    ->label(__('Small Price'))
+                                    ->numeric()
+                                    ->rules(['regex:/^\d{1,6}(\.\d{0,2})?$/'])
+                                    ->required(),
+
+                                Forms\Components\TextInput::make('price_medium')
+                                    ->label(__('Medium Price'))
+                                    ->numeric()
+                                    ->gte('price_small')
+                                    ->rules(['regex:/^\d{1,6}(\.\d{0,2})?$/'])
+                                    ->required(),
+
+                                Forms\Components\TextInput::make('price_large')
+                                    ->label(__('Large Price'))
+                                    ->numeric()
+                                    ->gte('price_medium')
+                                    ->rules(['regex:/^\d{1,6}(\.\d{0,2})?$/'])
+                                    ->required(),
+                            ]),
+
                         Forms\Components\MarkdownEditor::make('notes')
                             ->label(__('Note')),
                     ])
@@ -103,13 +128,24 @@ class SpecialityResource extends Resource
                     ->searchable()
                     ->expandableLimitedList(),
 
+                Tables\Columns\TextColumn::make('price_small')
+                    ->label(__('Small Price'))
+                    ->searchable()
+                    ->sortable(),
+
+                Tables\Columns\TextColumn::make('price_medium')
+                    ->label(__('Medium Price'))
+                    ->searchable()
+                    ->sortable(),
+
+                Tables\Columns\TextColumn::make('price_large')
+                    ->label(__('Large Price'))
+                    ->searchable()
+                    ->sortable(),
+
                 Tables\Columns\TextColumn::make('notes')
                     ->label(__('Notes'))
                     ->searchable()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('updated_at')
-                    ->label(__('Updated Date'))
-                    ->date()
                     ->sortable(),
             ])
             ->filters([
@@ -140,5 +176,13 @@ class SpecialityResource extends Resource
             'create' => Pages\CreateSpeciality::route('/create'),
             'edit' => Pages\EditSpeciality::route('/{record}/edit'),
         ];
+    }
+
+    public static function getNavigationBadge(): ?string
+    {
+        /** @var class-string<Model> $modelClass */
+        $modelClass = static::$model;
+
+        return (string) $modelClass::count();
     }
 }

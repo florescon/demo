@@ -14,6 +14,8 @@ return new class extends Migration
         Schema::create('shop_ingredients', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->decimal('price', 10, 2)->nullable();
+            $table->decimal('extra_price', 10, 2)->nullable();
             $table->longText('description')->nullable();
             $table->unsignedSmallInteger('position')->default(0);
             $table->boolean('is_visible')->default(false);

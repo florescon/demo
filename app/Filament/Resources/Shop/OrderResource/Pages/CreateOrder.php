@@ -13,6 +13,7 @@ use Filament\Notifications\Actions\Action;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
 use Filament\Resources\Pages\CreateRecord\Concerns\HasWizard;
+use Filament\Forms\Components\Split;
 
 class CreateOrder extends CreateRecord
 {
@@ -65,9 +66,14 @@ class CreateOrder extends CreateRecord
 
             Step::make(__('Order Items'))
                 ->schema([
-                    Section::make()->schema([
-                        OrderResource::getItemsRepeaterSecond(),
-                    ]),
+                    Split::make([
+                        Section::make()->schema([
+                            Section::make()->schema(OrderResource::getTotal())->columns(),
+                        ]),
+                        Section::make()->schema([
+                            OrderResource::getItemsRepeaterStar(),
+                        ])->grow(false),
+                    ])->from('md')
                 ]),
         ];
     }

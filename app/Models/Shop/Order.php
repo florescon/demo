@@ -61,6 +61,23 @@ class Order extends Model
         return $this->hasMany(Payment::class);
     }
 
+    public function getTotalItemsAttribute()
+    {
+        return $this->items->sum(function($item) {
+          return $item->qty * $item->unit_price;
+        });
+    }
+
+    public function getTotalPaymentsAttribute()
+    {
+        return $this->payments->sum('amount');
+    }
+
+    public function getTotalOrderAttribute()
+    {
+        return $this->total_items + $this->shipping_price;
+    }
+
     public function getCreatedAtTimeAttribute()
     {
         return $this->created_at ? $this->created_at->format('H:i') : null;

@@ -59,6 +59,26 @@ class IngredientResource extends Resource
                                     ->live(onBlur: true),
                             ]),
 
+                        Forms\Components\Grid::make()
+                            ->schema([
+
+                                Forms\Components\TextInput::make('price')
+                                    ->label(__('Price'))
+                                    ->numeric()
+                                    ->rules(['regex:/^\d{1,6}(\.\d{0,2})?$/'])
+                                    ->required()
+                                    ->live(onBlur: true)
+                                    ->afterStateUpdated(function (string $operation, $state, Forms\Set $set) {
+                                        $set('extra_price', $state);
+                                    }),
+
+                                Forms\Components\TextInput::make('extra_price')
+                                    ->label(__('Extra Price'))
+                                    ->numeric()
+                                    ->rules(['regex:/^\d{1,6}(\.\d{0,2})?$/'])
+                                    ->required()
+                            ]),
+
                         Forms\Components\Toggle::make('is_visible')
                             ->label(__('Visible to customers.'))
                             ->default(true),
@@ -89,6 +109,14 @@ class IngredientResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('name')
                     ->label(__('Name'))
+                    ->searchable()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('price')
+                    ->label(__('Price'))
+                    ->searchable()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('extra_price')
+                    ->label(__('Extra Price'))
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\IconColumn::make('is_visible')
@@ -129,5 +157,13 @@ class IngredientResource extends Resource
             'create' => Pages\CreateIngredient::route('/create'),
             'edit' => Pages\EditIngredient::route('/{record}/edit'),
         ];
+    }
+
+    public static function getNavigationBadge(): ?string
+    {
+        /** @var class-string<Model> $modelClass */
+        $modelClass = static::$model;
+
+        return (string) $modelClass::count();
     }
 }

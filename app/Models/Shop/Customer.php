@@ -43,7 +43,7 @@ class Customer extends Model
     /** @return HasMany<Comment> */
     public function orders(): HasMany
     {
-        return $this->hasMany(Order::class);
+        return $this->hasMany(Order::class, 'shop_customer_id');
     }
 
     /** @return HasManyThrough<Payment> */

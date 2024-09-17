@@ -14,6 +14,9 @@ return new class extends Migration
         Schema::create('shop_specialties', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->decimal('price_small', 10, 2)->nullable();
+            $table->decimal('price_medium', 10, 2)->nullable();
+            $table->decimal('price_large', 10, 2)->nullable();
             $table->text('notes')->nullable();
             $table->timestamps();
         });
