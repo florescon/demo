@@ -27,6 +27,7 @@ class Ingredient extends Model
      */
     protected $casts = [
         'is_visible' => 'boolean',
+        'for_pizza' => 'boolean',
     ];
 
     public function specialties(): BelongsToMany

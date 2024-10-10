@@ -101,9 +101,15 @@ class CustomerResource extends Resource
                     ->label(__('Email address'))
                     ->searchable(isIndividual: true, isGlobal: false)
                     ->sortable(),
-                Tables\Columns\TextColumn::make('country')
-                    ->label(__('Country'))
-                    ->getStateUsing(fn ($record): ?string => Country::find($record->addresses->first()?->country)?->name ?? null),
+                // Tables\Columns\TextColumn::make('country')
+                //     ->label(__('Country'))
+                //     ->getStateUsing(fn ($record): ?string => Country::find($record->addresses->first()?->country)?->name ?? null),
+                Tables\Columns\TextColumn::make('Address')
+                    ->label(__('Address'))
+                    ->getStateUsing(fn ($record): ?string => $record->addresses->first()?->street ?? null),
+                Tables\Columns\TextColumn::make('CP')
+                    ->label(__('CP'))
+                    ->getStateUsing(fn ($record): ?string => $record->addresses->first()?->zip ?? null),
                 Tables\Columns\TextColumn::make('phone')
                     ->label(__('Phone'))
                     ->searchable()

@@ -3,6 +3,7 @@
 namespace App\Models\Shop;
 
 use App\Enums\OrderStatus;
+use App\Enums\OrderPriority;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -31,10 +32,12 @@ class Order extends Model
         'shipping_price',
         'shipping_method',
         'notes',
+        'subtotal',
     ];
 
     protected $casts = [
         'status' => OrderStatus::class,
+        'priority' => OrderPriority::class,
     ];
 
     /** @return MorphOne<OrderAddress> */
@@ -55,6 +58,18 @@ class Order extends Model
         return $this->hasMany(OrderItem::class, 'shop_order_id');
     }
 
+    /** @return HasMany<OrderPizza> */
+    public function pizzas(): HasMany
+    {
+        return $this->hasMany(OrderPizza::class, 'shop_order_id');
+    }
+
+    /** @return HasMany<OrderItem> */
+    public function theitems(): HasMany
+    {
+        return $this->hasMany(OrderItem::class, 'shop_order_id', 'item_id');
+    }
+
     /** @return HasMany<Payment> */
     public function payments(): HasMany
     {
@@ -68,6 +83,13 @@ class Order extends Model
         });
     }
 
+    public function getTotalPizzasAttribute()
+    {
+        return $this->pizzas->sum(function($item) {
+          return $item->quantity * $item->unit_price;
+        });
+    }
+
     public function getTotalPaymentsAttribute()
     {
         return $this->payments->sum('amount');
@@ -75,7 +97,7 @@ class Order extends Model
 
     public function getTotalOrderAttribute()
     {
-        return $this->total_items + $this->shipping_price;
+        return $this->total_items + $this->total_pizzas + $this->shipping_price;
     }
 
     public function getCreatedAtTimeAttribute()

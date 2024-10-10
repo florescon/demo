@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Shop;
 
 use App\Enums\OrderStatus;
+use App\Enums\OrderPriority;
 use App\Enums\PropertyType;
 use App\Filament\Clusters\Products\Resources\ProductResource;
 use App\Filament\Resources\Shop\OrderResource\Pages;
@@ -26,6 +27,9 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Carbon;
 use Squire\Models\Currency;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Blade;
+use Filament\Support\Enums\Alignment;
 
 class OrderResource extends Resource
 {
@@ -68,6 +72,19 @@ class OrderResource extends Resource
 
                         Forms\Components\Section::make(__('Order items'))
                             ->headerActions([
+                                Action::make('pdf') 
+                                    ->label('PDF')
+                                    ->color('success')
+                                    ->action(function (Model $record) {
+                                        return response()->streamDownload(function () use ($record) {
+                                            echo Pdf::loadHtml(
+                                                Blade::render('pdf', ['record' => $record])
+                                            )->setPaper([0, 0, 1385.98, 296.85], 'landscape')->stream();
+                                        }, $record->number . '.pdf');
+                                    }), 
+
+                            ])
+                            ->footerActions([
                                 Action::make('reset')
                                     ->modalHeading('Are you sure?')
                                     ->modalDescription('All existing items will be removed from the order.')
@@ -75,6 +92,7 @@ class OrderResource extends Resource
                                     ->color('danger')
                                     ->action(fn (Forms\Set $set) => $set('items', [])),
                             ])
+                            ->footerActionsAlignment(Alignment::End)
                             ->schema([
                                 static::getItemsRepeater(),
                             ]),
@@ -87,9 +105,11 @@ class OrderResource extends Resource
                             ->label(__('Total'))
                             ->content(fn (Order $record): ?string => '$' . $record->total_order),
 
-                        Forms\Components\Placeholder::make('total_order')
+                        Forms\Components\TextInput::make('shipping_price')
                             ->label(__('Shipping'))
-                            ->content(fn (Order $record): ?string => '$' . $record->shipping_price),
+                            ->integer()
+                            ->helperText(__('This value adds to the total.'))
+                            ->default(0),
 
                         Forms\Components\Placeholder::make('created_at_time')
                             ->label(__('Hour'))
@@ -181,6 +201,17 @@ class OrderResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+
+                Tables\Actions\Action::make('pdf') 
+                    ->label('PDF')
+                    ->color('success')
+                    ->action(function (Model $record) {
+                        return response()->streamDownload(function () use ($record) {
+                            echo Pdf::loadHtml(
+                                Blade::render('pdf', ['record' => $record])
+                            )->setPaper([0, 0, 1385.98, 296.85], 'landscape')->stream();
+                        }, $record->number . '.pdf');
+                    }), 
             ])
             ->groupedBulkActions([
                 Tables\Actions\DeleteBulkAction::make()
@@ -272,8 +303,8 @@ class OrderResource extends Resource
             Forms\Components\Select::make('shop_customer_id')
                 ->label(__('Customer'))
                 ->relationship('customer', 'name')
-                ->searchable()
-                // ->required()
+                ->searchable(['name', 'phone'])
+                ->required()
                 ->createOptionForm([
                     Forms\Components\TextInput::make('name')
                         ->label(__('Name'))
@@ -311,9 +342,9 @@ class OrderResource extends Resource
             Forms\Components\ToggleButtons::make('status')
                 ->label(__('Status'))
                 ->inline()
+                ->default('processing')
                 ->options(OrderStatus::class)
-                // ->required(),
-                ,
+                ->required(),
 
             Forms\Components\Select::make('currency')
                 ->label(__('Moneda'))
@@ -321,6 +352,13 @@ class OrderResource extends Resource
                 ->default('mxn')
                 // ->getSearchResultsUsing(fn (string $query) => Currency::where('name', 'like', "%{$query}%")->pluck('name', 'id'))
                 ->getOptionLabelUsing(fn ($value): ?string => Currency::firstWhere('id', $value)?->getAttribute('name'))
+                ->required(),
+
+            Forms\Components\ToggleButtons::make('priority')
+                ->label(__('Priority'))
+                ->inline()
+                ->default('medium')
+                ->options(OrderPriority::class)
                 ->required(),
 
             // AddressForm::make('address')
@@ -334,27 +372,30 @@ class OrderResource extends Resource
 
     public static function getItemsRepeaterStar(): Repeater
     {
-        return Repeater::make('items')
+        return Repeater::make('pizzas')
             ->label(__('Items'))
             ->relationship()
             ->columnSpan(2)
             ->columns()
             ->schema([
-                Forms\Components\Select::make('shop_product_id')
-                    ->options(Product::pluck('name', 'id')->toArray())
-                    ->disableOptionsWhenSelectedInSiblingRepeaterItems()
-                    ->live()
-                    ->afterStateUpdated(function (Forms\Set $set) {
-                        $set('quantity', 1);
-                    }),
+                Forms\Components\Placeholder::make('Pizza')
+                    ->extraAttributes([
+                        'style'=>'border: 3px solid orange; font-weight: bold; text-center; text-align:center;'
+                    ])
+                    ->label(__('Content'))
+                    ->content('Pizza'),
+
                 Forms\Components\TextInput::make('quantity')
                     ->label(__('Quantity'))
                     ->numeric()
+                    ->required()
+                    ->rules(['min:1', 'not_in:0'])
                     ->default(1),
 
                 Forms\Components\ToggleButtons::make('size')
                     ->label(__('Size'))
                     ->inline()
+                    ->required()
                     ->options([
                         'price_small' => __('Small'),
                         'price_medium' => __('Medium'),
@@ -363,42 +404,46 @@ class OrderResource extends Resource
                 Forms\Components\ToggleButtons::make('choose')
                     ->label(__('Choose'))
                     ->inline()
+                    ->live()
+                    ->required()
                     ->options([
                         'half' => __('Half'),
                         'complete' => __('Complete')
-                    ]),
+                    ])
+                    ->colors([
+                            'half' => 'info',
+                            'complete' => 'success',
+                        ])
+                    ,
 
-                Forms\Components\Fieldset::make('speciality')
+                Forms\Components\Fieldset::make('properties.speciality')
                     ->label(__('Specialties'))
+                    ->extraAttributes([
+                        'style'=>'border: 4px solid green;'
+                    ])
                     ->visible(function (Forms\Get $get) { 
                         return $get('choose') == 'complete'; 
                     })
                     ->schema([
-                        // Forms\Components\ToggleButtons::make('choose')
-                        //     ->live()
-                        //     ->inline()
-                        //     ->columnSpanFull()
-                        //     ->options([
-                        //         'select_specialty' => __('Select Specialty'),
-                        //         'select_free' => __('Select Free')
-                        //     ]),
-
-                        Forms\Components\Select::make('speciality_id')
+                        Forms\Components\Select::make('properties.speciality_id')
                             ->suffixIcon('heroicon-m-beaker')
                             ->suffixIconColor('success')
+                            ->required()
                             ->label(__('Speciality'))
                             ->visible(function (Forms\Get $get) { 
                                 return $get('choose') == 'complete'; 
                             })
-                            ->helperText(__('Select the speciality'))
+                            ->helperText(__('Select the Speciality'))
                             ->searchable()
                             ->getSearchResultsUsing(fn (string $query) => Speciality::where('name', 'like', "%{$query}%")->pluck('name', 'id'))
                             ->getOptionLabelUsing(fn ($value): ?string => Speciality::find($value)?->name)
                             ->reactive()
-                            ->afterStateUpdated(function ($state, callable $set) {
+                            ->afterStateUpdated(function ($state, callable $set, Forms\Get $get) {
                                 // Actualiza los ingredientes cuando la especialidad cambia
 
-                                $set('ingredients', Speciality::find($state)?->ingredients->pluck('id')->toArray() ?? []);
+                                $getPrice = $get('size');
+                                $set('unit_price', $getPrice ? (Speciality::find($state)?->$getPrice ?? 0) : 0);
+                                $set('properties.ingredients', Speciality::find($state)?->ingredients->pluck('id')->toArray() ?? []);
                                 $set('placeholder_ingredients', Speciality::find($state)?->ingredients ? implode(', ', Speciality::find($state)?->ingredients->sortBy('name')->pluck('name')->toArray()) : '');
                             }),
 
@@ -409,7 +454,16 @@ class OrderResource extends Resource
                                 return  $get('placeholder_ingredients') ? '-> '. $get('placeholder_ingredients') .' <-' : '<- '. __('Select the Specialty');
                             }),
 
-                        Forms\Components\CheckboxList::make('ingredients')
+                        Forms\Components\TextInput::make('unit_price')
+                            ->label(__('Unit Price'))
+                            ->readOnly()
+                            // ->dehydrated()
+                            ->numeric()
+                            ->required()
+                            ->columns(2)
+                            ->columnSpanFull(),
+
+                        Forms\Components\CheckboxList::make('properties.ingredients')
                             ->label(__('Ingredients'))
                             ->columnSpanFull()
                             ->columns(2)
@@ -418,19 +472,140 @@ class OrderResource extends Resource
                                 return Ingredient::orderBy('name')->pluck('name', 'id')->toArray();
                             })
                             ->visible(function (callable $get) {
-                                return $get('speciality_id') !== null;
+                                return $get('properties.speciality_id') !== null;
                             })
                             ->searchable()
                             ->noSearchResultsMessage('No ingredients found.'),
 
-                        Forms\Components\Select::make('extra_ingredients')
-                            ->label(__('Extra Ingredients')),
-
+                        // Forms\Components\Select::make('extra_ingredients')
+                            // ->label(__('Extra Ingredients')),
                     ]),
+
+                Forms\Components\Fieldset::make('properties.speciality')
+                    ->label(__('Specialties by halves'))
+                    ->extraAttributes([
+                        'style'=>'border: 4px solid red;'
+                    ])
+                    ->visible(function (Forms\Get $get) { 
+                        return $get('choose') == 'half'; 
+                    })
+                    ->schema([
+                        Forms\Components\Placeholder::make('Primer mitad')
+                            ->extraAttributes([
+                                'style'=>'border-bottom: 4px solid black;'
+                            ])
+                            ->content(function (Forms\Get $get): string {
+                                return '1';
+                            })
+                            ->columnSpanFull(),
+
+                        Forms\Components\Select::make('properties.speciality_id')
+                            ->suffixIcon('heroicon-m-beaker')
+                            ->suffixIconColor('success')
+                            ->label(__('Speciality'))
+                            ->visible(function (Forms\Get $get) { 
+                                return $get('choose') == 'half'; 
+                            })
+                            ->helperText(__('Select the Speciality'))
+                            ->searchable()
+                            ->getSearchResultsUsing(fn (string $query) => Speciality::where('name', 'like', "%{$query}%")->pluck('name', 'id'))
+                            ->getOptionLabelUsing(fn ($value): ?string => Speciality::find($value)?->name)
+                            ->reactive()
+                            ->afterStateUpdated(function ($state, callable $set) {
+                                // Actualiza los ingredientes cuando la especialidad cambia
+
+                                $set('properties.ingredients', Speciality::find($state)?->ingredients->pluck('id')->toArray() ?? []);
+                                $set('placeholder_ingredients', Speciality::find($state)?->ingredients ? implode(', ', Speciality::find($state)?->ingredients->sortBy('name')->pluck('name')->toArray()) : '');
+                            }),
+
+                        Forms\Components\Placeholder::make('placeholder_ingredients')
+                            ->label(__('Ingredients by default'))
+                            ->content(function (callable $get) {
+                                // Aquí se obtienen todos los ingredientes
+                                return  $get('placeholder_ingredients') ? '-> '. $get('placeholder_ingredients') .' <-' : '<- '. __('Select the Specialty');
+                            }),
+
+                        Forms\Components\CheckboxList::make('properties.ingredients')
+                            ->label(__('Ingredients'))
+                            ->columnSpanFull()
+                            ->columns(2)
+                            ->options(function (callable $get) {
+                                // Aquí se obtienen todos los ingredientes
+                                return Ingredient::orderBy('name')->pluck('name', 'id')->toArray();
+                            })
+                            ->visible(function (callable $get) {
+                                return $get('properties.speciality_id') !== null;
+                            })
+                            ->searchable()
+                            ->noSearchResultsMessage('No ingredients found.'),
+
+
+
+
+
+
+                        Forms\Components\Placeholder::make('Segunda mitad')
+                            ->extraAttributes([
+                                'style'=>'border-bottom: 4px solid black;'
+                            ])
+                            ->content(function (Forms\Get $get): string {
+                                return '2';
+                            })
+                            ->columnSpanFull(),
+
+                        Forms\Components\Select::make('properties.speciality_id_second')
+                            ->suffixIcon('heroicon-m-beaker')
+                            ->suffixIconColor('success')
+                            ->label(__('Speciality'))
+                            ->visible(function (Forms\Get $get) { 
+                                return $get('choose') == 'half'; 
+                            })
+                            ->required()
+                            ->helperText(__('Select the Speciality'))
+                            ->searchable()
+                            ->getSearchResultsUsing(fn (string $query) => Speciality::where('name', 'like', "%{$query}%")->pluck('name', 'id'))
+                            ->getOptionLabelUsing(fn ($value): ?string => Speciality::find($value)?->name)
+                            ->reactive()
+                            ->afterStateUpdated(function ($state, callable $set) {
+                                // Actualiza los ingredientes cuando la especialidad cambia
+
+                                $set('properties.ingredients_second', Speciality::find($state)?->ingredients->pluck('id')->toArray() ?? []);
+                                $set('placeholder_ingredients_second', Speciality::find($state)?->ingredients ? implode(', ', Speciality::find($state)?->ingredients->sortBy('name')->pluck('name')->toArray()) : '');
+                            }),
+
+                        Forms\Components\Placeholder::make('placeholder_ingredients_second')
+                            ->label(__('Ingredients by default'))
+                            ->content(function (callable $get) {
+                                // Aquí se obtienen todos los ingredientes
+                                return  $get('placeholder_ingredients_second') ? '-> '. $get('placeholder_ingredients_second') .' <-' : '<- '. __('Select the Specialty');
+                            }),
+
+                        Forms\Components\CheckboxList::make('properties.ingredients_second')
+                            ->label(__('Ingredients'))
+                            ->columnSpanFull()
+                            ->columns(2)
+                            ->options(function (callable $get) {
+                                // Aquí se obtienen todos los ingredientes
+                                return Ingredient::orderBy('name')->pluck('name', 'id')->toArray();
+                            })
+                            ->visible(function (callable $get) {
+                                return $get('properties.speciality_id_second') !== null;
+                            })
+                            ->searchable()
+                            ->noSearchResultsMessage('No ingredients found.'),
+
+
+
+
+
+                        // Forms\Components\Select::make('extra_ingredients')
+                            // ->label(__('Extra Ingredients')),
+                    ]),
+
         ])
         ->live()
+        ->reorderable(false)
         ->afterStateUpdated(function (Forms\Get $get, Forms\Set $set) {
-            // $set('size', null);
             self::updateTotals($get, $set);
         })
         ->deleteAction(
@@ -464,14 +639,16 @@ class OrderResource extends Resource
     // This function updates totals based on the selected products and quantities
     public static function updateTotals(Forms\Get $get, Forms\Set $set): void
     {
+
+        // dd($get('pizzas'));
         // Retrieve all selected products and remove empty rows
-        $selectedSpecialties = collect($get('items'))->filter(fn($item) => !empty($item['speciality_id']) && !empty($item['quantity']) && !empty($item['size']));
-     
-        // Retrieve prices for all selected products
-        // $prices = Speciality::find($selectedSpecialties->pluck('speciality_id'))->pluck('price_small', 'id');
+        $selectedSpecialties = collect($get('pizzas'))->filter(fn($item) => !empty($item['properties']['speciality_id']) && !empty($item['quantity']) && !empty($item['size']));
 
         // Retrieve prices for all selected products
-        $specialityIds = $selectedSpecialties->pluck('speciality_id')->unique();
+        // $prices = Speciality::find($selectedSpecialties->pluck('properties.speciality_id'))->pluck('price_small', 'id');
+
+        // Retrieve prices for all selected products
+        $specialityIds = $selectedSpecialties->pluck('properties.speciality_id')->unique();
         $specialities = Speciality::find($specialityIds);
 
         // Prepare an array to store the total prices
@@ -479,8 +656,8 @@ class OrderResource extends Resource
 
         foreach ($selectedSpecialties as $item) {
 
-            $storedIngredientIds = $specialities->find($item['speciality_id'])->ingredients->pluck('id')->toArray();
-            $providedIngredientIds = array_map('intval', $item['ingredients']); // Convierte a enteros
+            $storedIngredientIds = $specialities->find($item['properties']['speciality_id'])->ingredients->pluck('id')->toArray();
+            $providedIngredientIds = array_map('intval', $item['properties']['ingredients']); // Convierte a enteros
             $unstoredIngredientIds = array_diff($providedIngredientIds, $storedIngredientIds);
 
             $totalPrice = 0;
@@ -488,12 +665,21 @@ class OrderResource extends Resource
             foreach($unstoredIngredientIds as $unstoredIngredient)
             {
                 $ingredientUns = Ingredient::find($unstoredIngredient);
-                $priceIngredientUns = $ingredientUns->price;
+                // $priceIngredientUns = $ingredientUns->price;
+
+                // Determine the correct price based on size
+                $priceIngredientUns = match ($item['size']) {
+                    'price_small' => $ingredientUns?->price_small,
+                    'price_medium' => $ingredientUns?->price_medium,
+                    'price_large' => $ingredientUns?->price_large,
+                    default => 0,
+                };
+
                 $totalPrice += $priceIngredientUns;
             }
             // dd($totalPrice);
 
-            $speciality = $specialities->find($item['speciality_id']);
+            $speciality = $specialities->find($item['properties']['speciality_id']);
 
             // Determine the correct price based on size
             $price = match ($item['size']) {
@@ -507,17 +693,17 @@ class OrderResource extends Resource
             $totalPrice += $price * $item['quantity'];
 
             // Add or update the total price for this speciality
-            if (isset($prices[$item['speciality_id']])) {
-                $prices[$item['speciality_id']] += $totalPrice;
+            if (isset($prices[$item['properties']['speciality_id']])) {
+                $prices[$item['properties']['speciality_id']] += $totalPrice;
             } else {
-                $prices[$item['speciality_id']] = $totalPrice;
+                $prices[$item['properties']['speciality_id']] = $totalPrice;
             }
         }
      
 
         // Calculate subtotal based on the selected products and quantities
         $subtotal = $selectedSpecialties->reduce(function ($subtotal, $product) use ($prices) {
-            return $subtotal + ($prices[$product['speciality_id']] * $product['quantity']);
+            return $subtotal + ($prices[$product['properties']['speciality_id']] * $product['quantity']);
         }, 0);
      
         // Update the state with the new values

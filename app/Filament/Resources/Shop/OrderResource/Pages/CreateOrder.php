@@ -46,7 +46,7 @@ class CreateOrder extends CreateRecord
         Notification::make()
             ->title(__('New order'))
             ->icon('heroicon-o-shopping-bag')
-            ->body("**{$order->customer?->name} ordenó {$order->items->count()} productos.**")
+            ->body("**{$order->customer?->name} ordenó {$order->theitems->count()} productos.**")
             ->actions([
                 Action::make('View')
                     ->label(__('View'))
@@ -64,17 +64,25 @@ class CreateOrder extends CreateRecord
                     Section::make()->schema(OrderResource::getDetailsFormSchema())->columns(),
                 ]),
 
-            Step::make(__('Order Items'))
+            Step::make(__('Pizza'))
                 ->schema([
                     Split::make([
                         Section::make()->schema([
-                            Section::make()->schema(OrderResource::getTotal())->columns(),
+                            Section::make()->schema(OrderResource::getTotal())->columns()
                         ]),
                         Section::make()->schema([
                             OrderResource::getItemsRepeaterStar(),
                         ])->grow(false),
                     ])->from('md')
                 ]),
+
+            Step::make(__('Order Items'))
+                ->schema([
+                    Section::make()->schema([
+                        OrderResource::getItemsRepeater(),
+                    ]),
+                ]),
+
         ];
     }
 }

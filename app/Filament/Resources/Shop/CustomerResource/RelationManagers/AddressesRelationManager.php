@@ -37,25 +37,37 @@ class AddressesRelationManager extends RelationManager
             ->schema([
                 Forms\Components\TextInput::make('street')
                 ->label(__('Street'))
+                ->minLength(3)
+                ->maxLength(100)
+                ->required()
                 ,
 
                 Forms\Components\TextInput::make('zip')
+                ->length(5)
+                ->integer()
+                ->required()
                 ->label(__('CP'))
                 ,
 
                 Forms\Components\TextInput::make('city')
                 ->label(__('City'))
+                ->default('Lagos de Moreno')
+                ->readOnly()
                 ,
 
                 Forms\Components\TextInput::make('state')
                 ->label(__('State'))
+                ->default('Jalisco')
+                ->readOnly()
                 ,
 
                 Forms\Components\Select::make('country')
                     ->label(__('Country'))
                     ->searchable()
-                    ->getSearchResultsUsing(fn (string $query) => Country::where('name', 'like', "%{$query}%")->pluck('name', 'id'))
-                    ->getOptionLabelUsing(fn ($value): ?string => Country::firstWhere('id', $value)?->getAttribute('name')),
+                    ->default('mx')
+                    // ->getSearchResultsUsing(fn (string $query) => Country::where('name', 'like', "%{$query}%")->pluck('name', 'id'))
+                    ->getOptionLabelUsing(fn ($value): ?string => Country::firstWhere('id', $value)?->getAttribute('name'))
+                    ->required(),
             ]);
     }
 

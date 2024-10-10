@@ -19,4 +19,9 @@ class OrderItem extends Model
     {
         return $this->belongsTo(Speciality::class, 'shop_speciality_id');
     }
+
+    public function product(): BelongsTo
+    {
+        return $this->belongsTo(Product::class, 'shop_product_id');
+    }
 }

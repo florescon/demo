@@ -33,12 +33,12 @@ class SpecialityResource extends Resource
 
     public static function getNavigationLabel(): string
     {
-        return __('Specialties');
+        return __('Pizza Specialties');
     }
 
     public static function getModelLabel(): string
     {
-        return __('Speciality');
+        return __('Pizza Speciality');
     }
 
     public static function getPluralLabel(): ?string

@@ -31,12 +31,12 @@ class IngredientResource extends Resource
 
     public static function getNavigationLabel(): string
     {
-        return __('Ingredients');
+        return __('Pizza Ingredients');
     }
 
     public static function getModelLabel(): string
     {
-        return __('Ingredient');
+        return __('Pizza Ingredient');
     }
 
     public static function getPluralLabel(): ?string
@@ -62,21 +62,30 @@ class IngredientResource extends Resource
                         Forms\Components\Grid::make()
                             ->schema([
 
-                                Forms\Components\TextInput::make('price')
-                                    ->label(__('Price'))
+                                Forms\Components\TextInput::make('price_small')
+                                    ->label(__('Small Price'))
                                     ->numeric()
                                     ->rules(['regex:/^\d{1,6}(\.\d{0,2})?$/'])
                                     ->required()
                                     ->live(onBlur: true)
                                     ->afterStateUpdated(function (string $operation, $state, Forms\Set $set) {
-                                        $set('extra_price', $state);
+                                        $set('price_medium', $state);
+                                        $set('price_large', $state);
                                     }),
 
-                                Forms\Components\TextInput::make('extra_price')
-                                    ->label(__('Extra Price'))
+                                Forms\Components\TextInput::make('price_medium')
+                                    ->label(__('Medium Price'))
                                     ->numeric()
+                                    ->gte('price_small')
                                     ->rules(['regex:/^\d{1,6}(\.\d{0,2})?$/'])
-                                    ->required()
+                                    ->required(),
+
+                                Forms\Components\TextInput::make('price_large')
+                                    ->label(__('Large Price'))
+                                    ->numeric()
+                                    ->gte('price_medium')
+                                    ->rules(['regex:/^\d{1,6}(\.\d{0,2})?$/'])
+                                    ->required(),
                             ]),
 
                         Forms\Components\Toggle::make('is_visible')
@@ -89,6 +98,12 @@ class IngredientResource extends Resource
                     ->columnSpan(['lg' => fn (?Ingredient $record) => $record === null ? 3 : 2]),
                 Forms\Components\Section::make()
                     ->schema([
+                        Forms\Components\TextInput::make('position')
+                            ->label(__('Position'))
+                            ->numeric()
+                            ->helperText(__('This product will be according to position.'))
+                            ->default(0),
+
                         Forms\Components\Placeholder::make('created_at')
                             ->label(__('Created at'))
                             ->content(fn (Ingredient $record): ?string => $record->created_at?->diffForHumans()),
@@ -111,12 +126,16 @@ class IngredientResource extends Resource
                     ->label(__('Name'))
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('price')
-                    ->label(__('Price'))
+                Tables\Columns\TextColumn::make('price_small')
+                    ->label(__('Small Price'))
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('extra_price')
-                    ->label(__('Extra Price'))
+                Tables\Columns\TextColumn::make('price_medium')
+                    ->label(__('Medium Price'))
+                    ->searchable()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('price_large')
+                    ->label(__('Large Price'))
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\IconColumn::make('is_visible')

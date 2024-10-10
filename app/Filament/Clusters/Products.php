@@ -13,4 +13,14 @@ class Products extends Cluster
     protected static ?int $navigationSort = 0;
 
     protected static ?string $slug = 'shop/products';
+
+    public static function getNavigationLabel(): string
+    {
+        return __('Products');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('Product');
+    }
 }
