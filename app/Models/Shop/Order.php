@@ -33,6 +33,7 @@ class Order extends Model
         'shipping_method',
         'notes',
         'subtotal',
+        'address_id',
     ];
 
     protected $casts = [
@@ -74,6 +75,11 @@ class Order extends Model
     public function payments(): HasMany
     {
         return $this->hasMany(Payment::class);
+    }
+
+    public function order_address(): BelongsTo
+    {
+        return $this->belongsTo(Address::class, 'address_id');
     }
 
     public function getTotalItemsAttribute()

@@ -14,6 +14,8 @@ use App\Models\Shop\Order;
 use App\Models\Shop\Product;
 use App\Models\Shop\Speciality;
 use App\Models\Shop\Ingredient;
+use App\Models\Shop\Customer;
+use App\Models\Address;
 use Filament\Forms;
 use Filament\Forms\Components\Actions\Action;
 use Filament\Forms\Components\Repeater;
@@ -30,6 +32,8 @@ use Squire\Models\Currency;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Blade;
 use Filament\Support\Enums\Alignment;
+use Squire\Models\Country;
+use Livewire\Component as Livewire;
 
 class OrderResource extends Resource
 {
@@ -305,6 +309,9 @@ class OrderResource extends Resource
                 ->relationship('customer', 'name')
                 ->searchable(['name', 'phone'])
                 ->required()
+                ->optionsLimit(10)
+                ->live()
+                ->dehydrated(false)
                 ->createOptionForm([
                     Forms\Components\TextInput::make('name')
                         ->label(__('Name'))
@@ -332,13 +339,87 @@ class OrderResource extends Resource
                         ->required()
                         ->native(false),
                 ])
+                ->afterStateUpdated(function (Forms\Set $set) {
+                    $set('address_id', null);
+                })
                 ->createOptionAction(function (Action $action) {
                     return $action
                         ->modalHeading(__('Create customer'))
                         ->modalSubmitActionLabel(__('Create customer'))
                         ->modalWidth('lg');
                 }),
+            Forms\Components\Select::make('address_id')
+                ->required()
+                ->label(__('Address'))
+                ->placeholder(fn (Forms\Get $get): string => empty($get('shop_customer_id')) ? __('First select customer') : __('Select an option'))
+                ->options(function (Forms\Get $get) {
+                    $custom = Customer::where('id', $get('shop_customer_id'))->with('addresses')->first();
+                    return $get('shop_customer_id') ? $custom->addresses->pluck('full_address', 'id') : null;
+                })
+                ->createOptionForm([
+                    Forms\Components\TextInput::make('street')
+                    ->label(__('Street'))
+                    ->minLength(3)
+                    ->maxLength(100)
+                    ->required()
+                    ,
 
+                    Forms\Components\TextInput::make('num')
+                    ->label(__('Number'))
+                    ->integer()
+                    ->minLength(1)
+                    ->maxLength(10)
+                    ->required()
+                    ,
+
+                    Forms\Components\TextInput::make('Departament')
+                    ->label(__('Departament'))
+                    ->minLength(3)
+                    ->maxLength(100)
+                    ->required()
+                    ,
+
+                    Forms\Components\TextInput::make('zip')
+                    ->length(5)
+                    ->integer()
+                    ->required()
+                    ->label(__('CP'))
+                    ,
+
+                    Forms\Components\TextInput::make('city')
+                    ->label(__('City'))
+                    ->default('Lagos de Moreno')
+                    ->readOnly()
+                    ,
+
+                    Forms\Components\TextInput::make('state')
+                    ->label(__('State'))
+                    ->default('Jalisco')
+                    ->readOnly()
+                    ,
+
+                    Forms\Components\Select::make('country')
+                        ->label(__('Country'))
+                        ->searchable()
+                        ->default('mx')
+                        // ->getSearchResultsUsing(fn (string $query) => Country::where('name', 'like', "%{$query}%")->pluck('name', 'id'))
+                        ->getOptionLabelUsing(fn ($value): ?string => Country::firstWhere('id', $value)?->getAttribute('name'))
+                        ->required(),
+
+
+                ])
+                ->createOptionAction(function (Action $action) {
+                    return $action
+                        ->modalHeading(__('Create address'))
+                        ->modalSubmitActionLabel(__('Create address'))
+                        ->modalWidth('lg');
+                })
+                ->createOptionUsing(function (array $data, Forms\Get $get): int {
+                    $getCustomer = Customer::find($get('shop_customer_id'));
+
+                    return $getCustomer->addresses()->create($data)->getKey();
+                })
+                ->disabled(fn (Forms\Get $get) => empty($get('shop_customer_id'))), // Desactiva si no hay cliente seleccionado
             Forms\Components\ToggleButtons::make('status')
                 ->label(__('Status'))
                 ->inline()
@@ -469,7 +550,7 @@ class OrderResource extends Resource
                             ->columns(2)
                             ->options(function (callable $get) {
                                 // Aquí se obtienen todos los ingredientes
-                                return Ingredient::orderBy('name')->pluck('name', 'id')->toArray();
+                                return Ingredient::where('for_pizza', true)->orderBy('name')->pluck('name', 'id')->toArray();
                             })
                             ->visible(function (callable $get) {
                                 return $get('properties.speciality_id') !== null;
@@ -531,7 +612,7 @@ class OrderResource extends Resource
                             ->columns(2)
                             ->options(function (callable $get) {
                                 // Aquí se obtienen todos los ingredientes
-                                return Ingredient::orderBy('name')->pluck('name', 'id')->toArray();
+                                return Ingredient::where('for_pizza', true)->orderBy('name')->pluck('name', 'id')->toArray();
                             })
                             ->visible(function (callable $get) {
                                 return $get('properties.speciality_id') !== null;
@@ -586,7 +667,7 @@ class OrderResource extends Resource
                             ->columns(2)
                             ->options(function (callable $get) {
                                 // Aquí se obtienen todos los ingredientes
-                                return Ingredient::orderBy('name')->pluck('name', 'id')->toArray();
+                                return Ingredient::where('for_pizza', true)->orderBy('name')->pluck('name', 'id')->toArray();
                             })
                             ->visible(function (callable $get) {
                                 return $get('properties.speciality_id_second') !== null;
@@ -664,7 +745,7 @@ class OrderResource extends Resource
 
             foreach($unstoredIngredientIds as $unstoredIngredient)
             {
-                $ingredientUns = Ingredient::find($unstoredIngredient);
+                $ingredientUns = Ingredient::where('for_pizza', true)->find($unstoredIngredient);
                 // $priceIngredientUns = $ingredientUns->price;
 
                 // Determine the correct price based on size

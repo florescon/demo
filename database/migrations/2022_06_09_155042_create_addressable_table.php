@@ -15,11 +15,13 @@ return new class extends Migration
             $table->string('city')->nullable();
             $table->string('state')->nullable();
             $table->string('zip')->nullable();
+            $table->integer('num')->nullable();
+            $table->string('departament')->nullable();
 
             $table->string('full_address')->virtualAs(
                 config('database.default') === 'sqlite'
-                    ? "street  || ', ' || zip  || ' ' || city"
-                    : "CONCAT(street, ', ', zip, ' ', city)"
+                    ? "num || ' ' || street  || ', ' || departament  || ', ' || zip"
+                    : "CONCAT(num, ' ', street, ', ', departament, ', ', zip)"
             );
 
             $table->timestamps();

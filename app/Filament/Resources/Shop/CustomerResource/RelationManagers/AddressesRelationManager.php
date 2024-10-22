@@ -42,6 +42,21 @@ class AddressesRelationManager extends RelationManager
                 ->required()
                 ,
 
+                Forms\Components\TextInput::make('num')
+                ->label(__('Number'))
+                ->integer()
+                ->minLength(1)
+                ->maxLength(10)
+                ->required()
+                ,
+
+                Forms\Components\TextInput::make('Departament')
+                ->label(__('Departament'))
+                ->minLength(3)
+                ->maxLength(100)
+                ->required()
+                ,
+
                 Forms\Components\TextInput::make('zip')
                 ->length(5)
                 ->integer()
@@ -75,21 +90,25 @@ class AddressesRelationManager extends RelationManager
     {
         return $table
             ->columns([
+                Tables\Columns\TextColumn::make('num')
+                ->label(__('Number'))
+                ,
+
                 Tables\Columns\TextColumn::make('street')
                 ->label(__('Street'))
+                ,
+
+                Tables\Columns\TextColumn::make('departament')
+                ->label(__('Departament'))
                 ,
 
                 Tables\Columns\TextColumn::make('zip')
                 ->label(__('CP'))
                 ,
 
-                Tables\Columns\TextColumn::make('city')
-                ->label(__('City'))
-                ,
-
-                Tables\Columns\TextColumn::make('country')
-                    ->label(__('Country'))
-                    ->formatStateUsing(fn ($state): ?string => Country::find($state)?->name ?? null),
+                // Tables\Columns\TextColumn::make('country')
+                //     ->label(__('Country'))
+                //     ->formatStateUsing(fn ($state): ?string => Country::find($state)?->name ?? null),
             ])
             ->filters([
                 //

@@ -29,7 +29,7 @@ class SpecialityResource extends Resource
 
     protected static ?string $navigationParentItem = 'Products';
 
-    protected static ?int $navigationSort = 2;
+    protected static ?int $navigationSort = 5;
 
     public static function getNavigationLabel(): string
     {

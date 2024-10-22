@@ -47,6 +47,21 @@
             </tr>
         </table>
 
+        @if($record->address_id)
+            <table width="100%">
+                <tr>
+                  <td align="left"><strong>Dirección:</strong> {{ optional($record->order_address)->full_address }}</td>
+                </tr>
+            </table>
+        @endif
+
+        @if($record->shipping_price)
+            <table width="100%">
+                <tr>
+                  <td align="left"><strong>Envío:</strong> ${{ $record->shipping_price }}</td>
+                </tr>
+            </table>
+        @endif
 
     	@if($record->shop_customer_id)
         <table width="100%">
@@ -63,7 +78,7 @@
             <table width="100%">
                 <thead style="background-color: gray;">
                   <tr align="center">
-                  	<th colspan="4" style="color: white;">Pizzas</th>
+                  	<th colspan="3" style="color: white;">Pizzas</th>
                   </tr>
                 </thead>
                 <thead style="background-color: gray; color: white;">
@@ -71,7 +86,7 @@
                       <th scope="col">Cant.</th>
                       <th scope="col">@lang('Size')</th>
                       <th scope="col">@lang('Tipo')</th>
-                      <th scope="col">@lang('Total')</th>
+                      {{-- <th scope="col">@lang('Total')</th> --}}
                   </tr>
                 </thead>
                 <tbody>
@@ -82,9 +97,9 @@
                       <td style="text-align: center; border: 1px solid red;">
                         {{ __($pizza->choose) }}
                       </td>
-                      <td style="text-align: center; border: 1px solid red;">
+                      {{-- <td style="text-align: center; border: 1px solid red;">
                         {{ __($pizza->unit_price) }}
-                      </td>
+                      </td> --}}
                   </tr>
                   <tr>
 					  <td colspan="3">

@@ -3,8 +3,8 @@
 namespace App\Filament\Clusters\Products\Resources;
 
 use App\Filament\Clusters\Products;
-use App\Filament\Clusters\Products\Resources\IngredientResource\Pages;
-use App\Filament\Clusters\Products\Resources\IngredientResource\RelationManagers;
+use App\Filament\Clusters\Products\Resources\OtherIngredientResource\Pages;
+use App\Filament\Clusters\Products\Resources\OtherIngredientResource\RelationManagers;
 use App\Models\Shop\Ingredient;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -15,7 +15,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Str;
 
-class IngredientResource extends Resource
+class OtherIngredientResource extends Resource
 {
     protected static ?string $model = Ingredient::class;
 
@@ -27,21 +27,16 @@ class IngredientResource extends Resource
 
     protected static ?string $navigationParentItem = 'Products';
 
-    protected static ?int $navigationSort = 4;
+    protected static ?int $navigationSort = 3;
 
     public static function getNavigationLabel(): string
     {
-        return __('Pizza Ingredients');
+        return __('Ingredients');
     }
 
     public static function getModelLabel(): string
     {
-        return __('Pizza Ingredient');
-    }
-
-    public static function getPluralLabel(): ?string
-    {
-        return static::getNavigationLabel();
+        return __('Ingredient');
     }
 
     public static function form(Form $form): Form
@@ -58,13 +53,12 @@ class IngredientResource extends Resource
                                     ->maxLength(50)
                                     ->live(onBlur: true),
                             ]),
-                        Forms\Components\Hidden::make('for_pizza')->default(true),
 
                         Forms\Components\Grid::make()
                             ->schema([
 
-                                Forms\Components\TextInput::make('price_small')
-                                    ->label(__('Small Price'))
+                                Forms\Components\TextInput::make('price')
+                                    ->label(__('Price'))
                                     ->numeric()
                                     ->rules(['regex:/^\d{1,6}(\.\d{0,2})?$/'])
                                     ->required()
@@ -74,19 +68,6 @@ class IngredientResource extends Resource
                                         $set('price_large', $state);
                                     }),
 
-                                Forms\Components\TextInput::make('price_medium')
-                                    ->label(__('Medium Price'))
-                                    ->numeric()
-                                    ->gte('price_small')
-                                    ->rules(['regex:/^\d{1,6}(\.\d{0,2})?$/'])
-                                    ->required(),
-
-                                Forms\Components\TextInput::make('price_large')
-                                    ->label(__('Large Price'))
-                                    ->numeric()
-                                    ->gte('price_medium')
-                                    ->rules(['regex:/^\d{1,6}(\.\d{0,2})?$/'])
-                                    ->required(),
                             ]),
 
                         Forms\Components\Toggle::make('is_visible')
@@ -119,6 +100,7 @@ class IngredientResource extends Resource
             ->columns(3);
     }
 
+
     public static function table(Table $table): Table
     {
         return $table
@@ -127,20 +109,9 @@ class IngredientResource extends Resource
                     ->label(__('Name'))
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('price_small')
-                    ->label(__('Small Price'))
+                Tables\Columns\TextColumn::make('price')
+                    ->label(__('Price'))
                     ->searchable()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('price_medium')
-                    ->label(__('Medium Price'))
-                    ->searchable()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('price_large')
-                    ->label(__('Large Price'))
-                    ->searchable()
-                    ->sortable(),
-                Tables\Columns\IconColumn::make('is_visible')
-                    ->label(__('Visibility'))
                     ->sortable(),
                 Tables\Columns\TextColumn::make('updated_at')
                     ->label(__('Updated Date'))
@@ -159,7 +130,7 @@ class IngredientResource extends Resource
                 ]),
             ])
             ->modifyQueryUsing(function (Builder $query) { 
-                return $query->where('for_pizza', true); 
+                return $query->where('for_pizza', false); 
             })
             ->defaultSort('sort')
             ->defaultPaginationPageOption(10)
@@ -176,9 +147,9 @@ class IngredientResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListIngredients::route('/'),
-            'create' => Pages\CreateIngredient::route('/create'),
-            'edit' => Pages\EditIngredient::route('/{record}/edit'),
+            'index' => Pages\ListOtherIngredients::route('/'),
+            'create' => Pages\CreateOtherIngredient::route('/create'),
+            'edit' => Pages\EditOtherIngredient::route('/{record}/edit'),
         ];
     }
 
@@ -187,6 +158,7 @@ class IngredientResource extends Resource
         /** @var class-string<Model> $modelClass */
         $modelClass = static::$model;
 
-        return (string) $modelClass::where('for_pizza', true)->count();
+        return (string) $modelClass::where('for_pizza', false)->count();
     }
+
 }

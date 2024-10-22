@@ -15,6 +15,8 @@ class AddressFactory extends Factory
             'country' => strtolower($this->faker->countryCode()),
             'street' => $this->faker->streetAddress(),
             'state' => $this->faker->state(),
+            'num' => $this->faker->numberBetween(1, 1000),
+            'departament' => $this->faker->state(),
             'city' => $this->faker->city(),
             'zip' => $this->faker->postcode(),
         ];
