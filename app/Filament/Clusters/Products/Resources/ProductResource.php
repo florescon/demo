@@ -289,7 +289,8 @@ class ProductResource extends Resource
                             ->warning()
                             ->send();
                     }),
-            ]);
+            ])
+            ->selectCurrentPageOnly();
     }
 
     public static function getRelations(): array

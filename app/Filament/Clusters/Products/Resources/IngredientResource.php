@@ -163,7 +163,8 @@ class IngredientResource extends Resource
             })
             ->defaultSort('sort')
             ->defaultPaginationPageOption(10)
-            ->reorderable('sort');
+            ->reorderable('sort')
+            ->selectCurrentPageOnly();
     }
 
     public static function getRelations(): array

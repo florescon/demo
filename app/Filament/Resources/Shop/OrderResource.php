@@ -231,7 +231,8 @@ class OrderResource extends Resource
                     ->label(__('Created'))
                     ->date()
                     ->collapsible(),
-            ]);
+            ])
+            ->selectCurrentPageOnly();
     }
 
     public static function getRelations(): array

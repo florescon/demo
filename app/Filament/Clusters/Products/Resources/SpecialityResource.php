@@ -159,7 +159,8 @@ class SpecialityResource extends Resource
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ])
-            ->defaultPaginationPageOption(10);
+            ->defaultPaginationPageOption(10)
+            ->selectCurrentPageOnly();
     }
 
     public static function getRelations(): array

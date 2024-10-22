@@ -129,7 +129,8 @@ class CustomerResource extends Resource
                             ->warning()
                             ->send();
                     }),
-            ]);
+            ])
+            ->selectCurrentPageOnly();
     }
 
     /** @return Builder<Customer> */
