@@ -78,7 +78,7 @@
             <table width="100%">
                 <thead style="background-color: gray;">
                   <tr align="center">
-                  	<th colspan="3" style="color: white;">Pizzas</th>
+                  	<th colspan="4" style="color: white;">Pizzas</th>
                   </tr>
                 </thead>
                 <thead style="background-color: gray; color: white;">
@@ -86,7 +86,7 @@
                       <th scope="col">Cant.</th>
                       <th scope="col">@lang('Size')</th>
                       <th scope="col">@lang('Tipo')</th>
-                      {{-- <th scope="col">@lang('Total')</th> --}}
+                      <th scope="col">@lang('Total')</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -97,9 +97,9 @@
                       <td style="text-align: center; border: 1px solid red;">
                         {{ __($pizza->choose) }}
                       </td>
-                      {{-- <td style="text-align: center; border: 1px solid red;">
+                      <td style="text-align: center; border: 1px solid red;">
                         {{ __($pizza->unit_price) }}
-                      </td> --}}
+                      </td>
                   </tr>
                   <tr>
 					  <td colspan="3">

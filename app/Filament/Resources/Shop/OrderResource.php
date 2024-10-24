@@ -309,7 +309,7 @@ class OrderResource extends Resource
                 ->label(__('Customer'))
                 ->relationship('customer', 'name')
                 ->searchable(['name', 'phone'])
-                ->required()
+                // ->required()
                 ->optionsLimit(10)
                 ->live()
                 ->dehydrated(false)
@@ -350,7 +350,7 @@ class OrderResource extends Resource
                         ->modalWidth('lg');
                 }),
             Forms\Components\Select::make('address_id')
-                ->required()
+                // ->required()
                 ->label(__('Address'))
                 ->placeholder(fn (Forms\Get $get): string => empty($get('shop_customer_id')) ? __('First select customer') : __('Select an option'))
                 ->options(function (Forms\Get $get) {
@@ -530,7 +530,7 @@ class OrderResource extends Resource
                             }),
 
                         Forms\Components\Placeholder::make('placeholder_ingredients')
-                            ->label(__('Ingredients by default'))
+                            ->label(__('Ingredients by default').' [Completa]')
                             ->content(function (callable $get) {
                                 // Aquí se obtienen todos los ingredientes
                                 return  $get('placeholder_ingredients') ? '-> '. $get('placeholder_ingredients') .' <-' : '<- '. __('Select the Specialty');
@@ -701,6 +701,7 @@ class OrderResource extends Resource
     {
         return [
             Forms\Components\Placeholder::make('time')
+                ->label(__('Last render'))
                 ->content(fn ($state): string =>  now()->format('H:i'))
                 ->columnSpanFull(),
 
