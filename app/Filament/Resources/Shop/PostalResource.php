@@ -78,7 +78,6 @@ class PostalResource extends Resource
                 Forms\Components\Toggle::make('active')
                     ->label(__('Active'))
                     ->default(false),
-
             ]);
     }
 

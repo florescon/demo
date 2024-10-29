@@ -318,6 +318,7 @@
     "Small": "Chica",
     "Medium": "Mediana",
     "Large": "Grande",
+    "Average": "Media",
     "High": "Alta",
     "Select Specialty": "Seleccionar Especialidad",
     "Select Free": "Seleccionar Libre",
@@ -499,5 +500,7 @@
     "View timesheet dashboard": "Ver panel de control de hojas de tiempo",
     "View user": "Ver usuario",
     "Low": "Bajo",
-    "Hight": "Alto"
+    "Hight": "Alto",
+    "Branches": "Sucursales",
+    "Branch": "Sucursal"
 }

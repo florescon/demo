@@ -73,6 +73,14 @@
         @endif
 
         <br>
+        <table width="100%">
+            <tr>
+              <td align="center"><h2><strong>Total:</strong> ${{ number_format($record->total_order, 2, '.', ',') }}</h2></td>
+            </tr>
+        </table>
+
+
+        <br>
 
         @if(count($record->pizzas))
             <table width="100%">
@@ -98,7 +106,7 @@
                         {{ __($pizza->choose) }}
                       </td>
                       <td style="text-align: center; border: 1px solid red;">
-                        {{ __($pizza->unit_price) }}
+                        ${{ __($pizza->unit_price) }}
                       </td>
                   </tr>
                   <tr>
@@ -170,7 +178,7 @@
 	                      <th scope="row">{{ $item->qty }}</th>
 	                      <td>{{ optional($item->product)->name }}</td>
 	                      <td>
-	                        ${{ $item->unit_price * $item->qty }}
+	                        ${{ number_format(($item->unit_price * $item->qty) ?? 0 , '2', '.', ',') }}
 	                      </td>
 	                  </tr>
                   @endforeach

@@ -18,7 +18,7 @@ enum OrderPriority: string implements HasColor, HasIcon, HasLabel
     {
         return match ($this) {
             self::Low => __('Low'),
-            self::Medium => __('Medium'),
+            self::Medium => __('Average'),
             self::High => __('High'),
         };
     }

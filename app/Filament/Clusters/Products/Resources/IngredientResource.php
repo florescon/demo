@@ -102,6 +102,7 @@ class IngredientResource extends Resource
                         Forms\Components\TextInput::make('position')
                             ->label(__('Position'))
                             ->numeric()
+                            ->rules(['regex:/^\d{1,4}(\.\d{0,2})?$/'])
                             ->helperText(__('This product will be according to position.'))
                             ->default(0),
 
@@ -125,6 +126,10 @@ class IngredientResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('name')
                     ->label(__('Name'))
+                    ->searchable()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('position')
+                    ->label(__('Position'))
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('price_small')
@@ -161,9 +166,9 @@ class IngredientResource extends Resource
             ->modifyQueryUsing(function (Builder $query) { 
                 return $query->where('for_pizza', true); 
             })
-            ->defaultSort('sort')
+            ->defaultSort('position')
             ->defaultPaginationPageOption(10)
-            ->reorderable('sort')
+            ->reorderable('position')
             ->selectCurrentPageOnly();
     }
 
