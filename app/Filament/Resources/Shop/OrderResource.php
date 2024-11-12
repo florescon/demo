@@ -15,6 +15,7 @@ use App\Models\Shop\Product;
 use App\Models\Shop\Speciality;
 use App\Models\Shop\Ingredient;
 use App\Models\Shop\Customer;
+use App\Models\Shop\Category;
 use App\Models\Address;
 use Filament\Forms;
 use Filament\Forms\Components\Actions\Action;
@@ -898,9 +899,25 @@ class OrderResource extends Resource
             ->label(__('Items'))
             ->relationship()
             ->schema([
+                Forms\Components\ToggleButtons::make('category_id')
+                    ->label(__('Categories'))
+                    ->inline()
+                    ->columnSpan('full')
+                    ->reactive()
+                    ->dehydrated(false) // Esto previene que category_id se guarde
+                    ->options(Category::query()->pluck('name', 'id')->toArray()),
+
                 Forms\Components\Select::make('shop_product_id')
                     ->label(__('Product'))
-                    ->options(Product::query()->pluck('name', 'id'))
+                    // ->options(Product::query()->pluck('name', 'id'))
+                    ->options(function (callable $get) {
+                        $categoryId = $get('category_id');
+                        // Si no se selecciona una categoría, no se muestran productos
+                        return $categoryId
+                            ? Product::whereHas('categories', fn ($query) => $query->where('shop_categories.id', $categoryId))
+                                ->pluck('name', 'id')
+                            : Product::query()->pluck('name', 'id');
+                    })
                     ->required()
                     ->reactive()
                     ->afterStateUpdated(fn ($state, Forms\Set $set) => $set('unit_price', Product::find($state)?->price ?? 0))

@@ -21,6 +21,8 @@ class LinkResource extends Resource
 {
     use Translatable;
 
+    protected static bool $shouldRegisterNavigation = false;
+
     protected static ?string $model = Link::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-link';

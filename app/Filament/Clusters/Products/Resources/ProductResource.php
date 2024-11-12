@@ -204,11 +204,12 @@ class ProductResource extends Resource
                     ->searchable()
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('brand.name')
-                    ->label(__('Brand'))
-                    ->searchable()
-                    ->sortable()
-                    ->toggleable(),
+                Tables\Columns\TextColumn::make('categories.name')
+                    ->label(__('Categories'))
+                    ->badge()
+                    ->listWithLineBreaks()
+                    ->limitList(2)
+                    ->expandableLimitedList(),
 
                 Tables\Columns\IconColumn::make('is_visible')
                     ->label(__('Visibility'))
@@ -233,13 +234,14 @@ class ProductResource extends Resource
                     ->toggleable(),
 
                 Tables\Columns\TextColumn::make('security_stock')
+                    ->label(__('Security stock'))
                     ->searchable()
                     ->sortable()
                     ->toggleable()
                     ->toggledHiddenByDefault(),
 
                 Tables\Columns\TextColumn::make('published_at')
-                    ->label('Publish Date')
+                    ->label(__('Publish Date'))
                     ->date()
                     ->sortable()
                     ->toggleable()

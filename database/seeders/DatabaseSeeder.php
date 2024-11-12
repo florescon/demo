@@ -26,6 +26,7 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\Console\Helper\ProgressBar;
+use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
@@ -41,6 +42,8 @@ class DatabaseSeeder extends Seeder
         $user = $this->withProgressBar(1, fn () => User::factory(1)->create([
             'name' => 'Francos',
             'email' => 'francos@francos.com',
+            'password' => Hash::make('01FrancosPizza'),
+
         ]));
         $this->command->info('Admin user created.');
 
