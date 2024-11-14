@@ -7,8 +7,8 @@ use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Squire\Models\Country;
 use Illuminate\Database\Eloquent\Model;
+use Squire\Models\Country;
 
 class AddressesRelationManager extends RelationManager
 {
@@ -19,7 +19,7 @@ class AddressesRelationManager extends RelationManager
     public static function getTitle(Model $ownerRecord, string $pageClass): string
     {
         return __('Addresses');
-    }    
+    }
 
     public static function getModelLabel(): string
     {
@@ -36,45 +36,39 @@ class AddressesRelationManager extends RelationManager
         return $form
             ->schema([
                 Forms\Components\TextInput::make('street')
-                ->label(__('Street'))
-                ->minLength(3)
-                ->maxLength(100)
-                ->required()
-                ,
+                    ->label(__('Street'))
+                    ->minLength(3)
+                    ->maxLength(100)
+                    ->required(),
 
                 Forms\Components\TextInput::make('num')
-                ->label(__('Number'))
-                ->integer()
-                ->minLength(1)
-                ->maxLength(10)
-                ->required()
-                ,
+                    ->label(__('Number'))
+                    ->integer()
+                    ->minLength(1)
+                    ->maxLength(10)
+                    ->required(),
 
                 Forms\Components\TextInput::make('Departament')
-                ->label(__('Departament'))
-                ->minLength(3)
-                ->maxLength(100)
-                ->required()
-                ,
+                    ->label(__('Departament'))
+                    ->minLength(3)
+                    ->maxLength(100)
+                    ->required(),
 
                 Forms\Components\TextInput::make('zip')
-                ->length(5)
-                ->integer()
-                ->required()
-                ->label(__('CP'))
-                ,
+                    ->length(5)
+                    ->integer()
+                    ->required()
+                    ->label(__('CP')),
 
                 Forms\Components\TextInput::make('city')
-                ->label(__('City'))
-                ->default('Lagos de Moreno')
-                ->readOnly()
-                ,
+                    ->label(__('City'))
+                    ->default('Lagos de Moreno')
+                    ->readOnly(),
 
                 Forms\Components\TextInput::make('state')
-                ->label(__('State'))
-                ->default('Jalisco')
-                ->readOnly()
-                ,
+                    ->label(__('State'))
+                    ->default('Jalisco')
+                    ->readOnly(),
 
                 Forms\Components\Select::make('country')
                     ->label(__('Country'))
@@ -91,20 +85,16 @@ class AddressesRelationManager extends RelationManager
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('num')
-                ->label(__('Number'))
-                ,
+                    ->label(__('Number')),
 
                 Tables\Columns\TextColumn::make('street')
-                ->label(__('Street'))
-                ,
+                    ->label(__('Street')),
 
                 Tables\Columns\TextColumn::make('departament')
-                ->label(__('Departament'))
-                ,
+                    ->label(__('Departament')),
 
                 Tables\Columns\TextColumn::make('zip')
-                ->label(__('CP'))
-                ,
+                    ->label(__('CP')),
 
                 // Tables\Columns\TextColumn::make('country')
                 //     ->label(__('Country'))

@@ -7,8 +7,8 @@ use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Squire\Models\Country;
 use Illuminate\Database\Eloquent\Model;
+use Squire\Models\Country;
 
 class AddressesRelationManager extends RelationManager
 {
@@ -19,7 +19,7 @@ class AddressesRelationManager extends RelationManager
     public static function getTitle(Model $ownerRecord, string $pageClass): string
     {
         return __('Addresses');
-    }    
+    }
 
     public static function getModelLabel(): string
     {

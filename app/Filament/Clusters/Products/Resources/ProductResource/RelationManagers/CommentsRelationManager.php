@@ -23,7 +23,7 @@ class CommentsRelationManager extends RelationManager
     public static function getTitle(Model $ownerRecord, string $pageClass): string
     {
         return __('Comments');
-    }    
+    }
 
     public static function getModelLabel(): string
     {

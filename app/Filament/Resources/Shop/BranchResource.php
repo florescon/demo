@@ -3,15 +3,12 @@
 namespace App\Filament\Resources\Shop;
 
 use App\Filament\Resources\Shop\BranchResource\Pages;
-use App\Filament\Resources\Shop\BranchResource\RelationManagers;
 use App\Models\Shop\Branch;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class BranchResource extends Resource
 {

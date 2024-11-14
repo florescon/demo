@@ -4,7 +4,6 @@ namespace App\Filament\Clusters\Products\Resources;
 
 use App\Filament\Clusters\Products;
 use App\Filament\Clusters\Products\Resources\IngredientResource\Pages;
-use App\Filament\Clusters\Products\Resources\IngredientResource\RelationManagers;
 use App\Models\Shop\Ingredient;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -12,8 +11,6 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
-use Illuminate\Support\Str;
 
 class IngredientResource extends Resource
 {
@@ -163,8 +160,8 @@ class IngredientResource extends Resource
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ])
-            ->modifyQueryUsing(function (Builder $query) { 
-                return $query->where('for_pizza', true); 
+            ->modifyQueryUsing(function (Builder $query) {
+                return $query->where('for_pizza', true);
             })
             ->defaultSort('position')
             ->defaultPaginationPageOption(10)

@@ -2,20 +2,15 @@
 
 namespace App\Filament\Clusters\Products\Resources;
 
-use App\Models\Shop\Ingredient;
-use App\Models\Shop\Element;
 use App\Filament\Clusters\Products;
 use App\Filament\Clusters\Products\Resources\SpecialityResource\Pages;
-use App\Filament\Clusters\Products\Resources\SpecialityResource\RelationManagers;
+use App\Models\Shop\Ingredient;
 use App\Models\Shop\Speciality;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
-use Illuminate\Support\Str;
 
 class SpecialityResource extends Resource
 {
@@ -60,7 +55,6 @@ class SpecialityResource extends Resource
                                     ->maxLength(50)
                                     ->live(onBlur: true),
                             ]),
-
 
                         Forms\Components\Grid::make()
                             ->schema([
@@ -112,7 +106,7 @@ class SpecialityResource extends Resource
             ->columns(3);
     }
 
-     public static function table(Table $table): Table
+    public static function table(Table $table): Table
     {
         return $table
             ->columns([

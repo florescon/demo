@@ -4,13 +4,11 @@ namespace App\Filament\Resources\Shop\CustomerResource\RelationManagers;
 
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Forms\Get;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Database\Eloquent\Model;
-use Filament\Forms\Get;
 
 class OrdersRelationManager extends RelationManager
 {
@@ -26,7 +24,7 @@ class OrdersRelationManager extends RelationManager
     public static function getTitle(Model $ownerRecord, string $pageClass): string
     {
         return __('Orders');
-    }    
+    }
 
     public static function getModelLabel(): string
     {

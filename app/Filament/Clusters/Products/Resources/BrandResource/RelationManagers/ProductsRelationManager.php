@@ -18,7 +18,7 @@ class ProductsRelationManager extends RelationManager
     public static function getTitle(Model $ownerRecord, string $pageClass): string
     {
         return __('Products');
-    }    
+    }
 
     public static function getModelLabel(): string
     {

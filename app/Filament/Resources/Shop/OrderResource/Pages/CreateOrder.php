@@ -6,6 +6,7 @@ use App\Filament\Resources\Shop\OrderResource;
 use App\Models\Shop\Order;
 use App\Models\User;
 use Filament\Forms\Components\Section;
+use Filament\Forms\Components\Split;
 use Filament\Forms\Components\Wizard;
 use Filament\Forms\Components\Wizard\Step;
 use Filament\Forms\Form;
@@ -13,7 +14,6 @@ use Filament\Notifications\Actions\Action;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
 use Filament\Resources\Pages\CreateRecord\Concerns\HasWizard;
-use Filament\Forms\Components\Split;
 
 class CreateOrder extends CreateRecord
 {
@@ -34,7 +34,6 @@ class CreateOrder extends CreateRecord
             ])
             ->columns(null);
     }
-
 
     protected function afterCreate(): void
     {
@@ -69,12 +68,12 @@ class CreateOrder extends CreateRecord
                 ->schema([
                     Split::make([
                         Section::make()->schema([
-                            Section::make()->schema(OrderResource::getTotal())->columns()
+                            Section::make()->schema(OrderResource::getTotal())->columns(),
                         ]),
                         Section::make()->schema([
                             OrderResource::getItemsRepeaterStar(),
                         ])->grow(false),
-                    ])->from('md')
+                    ])->from('md'),
                 ]),
 
             Step::make(__('Order Items'))
@@ -99,18 +98,16 @@ class CreateOrder extends CreateRecord
     {
         $getPrice = $get('size');
 
-        if($getPrice && $anotherSpeciality){
+        if ($getPrice && $anotherSpeciality) {
             $priceFirst = Speciality::find($anotherSpeciality)?->$getPrice ?? 0;
-            if($priceFirst > Speciality::find($state)?->$getPrice){
+            if ($priceFirst > Speciality::find($state)?->$getPrice) {
                 $priceSet = $priceFirst;
                 $set('unit_price', $priceSet ?? 0);
-            }
-            else{
+            } else {
                 // $set('unit_price', $getPrice ? (Speciality::find($state)?->$getPrice ?? 0) : 0);
                 $priceSet = $getPrice ? (Speciality::find($state)?->$getPrice ?? 0) : 0;
             }
-        }
-        else{
+        } else {
             // $set('unit_price', $getPrice ? (Speciality::find($state)?->$getPrice ?? 0) : 0);
             $priceSet = $getPrice ? (Speciality::find($state)?->$getPrice ?? 0) : 0;
         }
@@ -126,15 +123,14 @@ class CreateOrder extends CreateRecord
         $getPrice = $get('size');
         $speciality = $propertySpeciality ? Speciality::find($propertySpeciality) : null;
         $setPrice = $speciality?->$getPrice * $get('quantity');
-        if($speciality){
+        if ($speciality) {
             $storedIngredientIds = $speciality->find($propertySpeciality)->ingredients->pluck('id')->toArray();
             $providedIngredientIds = array_map('intval', $state); // Convierte a enteros
             $unstoredIngredientIds = array_diff($providedIngredientIds, $storedIngredientIds);
 
             $totalPrice = 0;
 
-            foreach($unstoredIngredientIds as $unstoredIngredient)
-            {
+            foreach ($unstoredIngredientIds as $unstoredIngredient) {
                 $ingredientUns = Ingredient::where('for_pizza', true)->find($unstoredIngredient);
                 $priceIngredientUns = match ($getPrice) {
                     'price_small' => $ingredientUns?->price_small,
@@ -151,11 +147,9 @@ class CreateOrder extends CreateRecord
 
     }
 
-
     public static function resetIngredients($state, callable $set, Forms\Get $get): void
     {
         $set('properties.ingredients', $get('properties.speciality_id') ? Speciality::find($get('properties.speciality_id'))?->ingredients->pluck('id')->toArray() ?? [] : []);
         $set('properties.ingredients_second', $get('properties.speciality_id_second') ? Speciality::find($get('properties.speciality_id_second'))?->ingredients->pluck('id')->toArray() ?? [] : []);
     }
-
 }

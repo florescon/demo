@@ -2,8 +2,8 @@
 
 namespace App\Models\Shop;
 
-use App\Enums\OrderStatus;
 use App\Enums\OrderPriority;
+use App\Enums\OrderStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -84,15 +84,15 @@ class Order extends Model
 
     public function getTotalItemsAttribute()
     {
-        return $this->items->sum(function($item) {
-          return $item->qty * $item->unit_price;
+        return $this->items->sum(function ($item) {
+            return $item->qty * $item->unit_price;
         });
     }
 
     public function getTotalPizzasAttribute()
     {
-        return $this->pizzas->sum(function($item) {
-          return $item->quantity * $item->unit_price;
+        return $this->pizzas->sum(function ($item) {
+            return $item->quantity * $item->unit_price;
         });
     }
 

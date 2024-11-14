@@ -3,7 +3,6 @@
 namespace App\Filament\Clusters\Products\Resources\SpecialityResource\Pages;
 
 use App\Filament\Clusters\Products\Resources\SpecialityResource;
-use Filament\Actions;
 use Filament\Resources\Pages\CreateRecord;
 
 class CreateSpeciality extends CreateRecord

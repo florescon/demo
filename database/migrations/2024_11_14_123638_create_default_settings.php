@@ -31,7 +31,7 @@ return new class extends SettingsMigration
         rescue(fn () => $this->migrator->add('customization.stylesheet'));
 
         // Theme settings...
-        rescue(fn () => $this->migrator->add('theme.app_banner'));    
+        rescue(fn () => $this->migrator->add('theme.app_banner'));
     }
 
     /**

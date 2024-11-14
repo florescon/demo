@@ -4,7 +4,6 @@ namespace App\Filament\Clusters\Products\Resources;
 
 use App\Filament\Clusters\Products;
 use App\Filament\Clusters\Products\Resources\OtherIngredientResource\Pages;
-use App\Filament\Clusters\Products\Resources\OtherIngredientResource\RelationManagers;
 use App\Models\Shop\Ingredient;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -12,8 +11,6 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
-use Illuminate\Support\Str;
 
 class OtherIngredientResource extends Resource
 {
@@ -100,7 +97,6 @@ class OtherIngredientResource extends Resource
             ->columns(3);
     }
 
-
     public static function table(Table $table): Table
     {
         return $table
@@ -129,8 +125,8 @@ class OtherIngredientResource extends Resource
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ])
-            ->modifyQueryUsing(function (Builder $query) { 
-                return $query->where('for_pizza', false); 
+            ->modifyQueryUsing(function (Builder $query) {
+                return $query->where('for_pizza', false);
             })
             ->defaultSort('sort')
             ->defaultPaginationPageOption(10)
@@ -161,5 +157,4 @@ class OtherIngredientResource extends Resource
 
         return (string) $modelClass::where('for_pizza', false)->count();
     }
-
 }

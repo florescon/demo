@@ -3,15 +3,12 @@
 namespace App\Filament\Resources\Shop;
 
 use App\Filament\Resources\Shop\ChefResource\Pages;
-use App\Filament\Resources\Shop\ChefResource\RelationManagers;
 use App\Models\Shop\Chef;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class ChefResource extends Resource
 {
@@ -46,14 +43,14 @@ class ChefResource extends Resource
     {
         return $form
             ->schema([
-            Forms\Components\Select::make('branch_id')
-                ->label(__('Branch'))
-                ->relationship('branch', 'name')
-                ->searchable(['name'])
-                ->required()
-                ->optionsLimit(5)
-                ->live()
-                ->dehydrated(false),
+                Forms\Components\Select::make('branch_id')
+                    ->label(__('Branch'))
+                    ->relationship('branch', 'name')
+                    ->searchable(['name'])
+                    ->required()
+                    ->optionsLimit(5)
+                    ->live()
+                    ->dehydrated(false),
                 Forms\Components\TextInput::make('name')
                     ->label(__('Name'))
                     ->maxLength(255)

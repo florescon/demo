@@ -3,15 +3,12 @@
 namespace App\Filament\Resources\Shop;
 
 use App\Filament\Resources\Shop\PostalResource\Pages;
-use App\Filament\Resources\Shop\PostalResource\RelationManagers;
 use App\Models\Shop\Postal;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 
 class PostalResource extends Resource

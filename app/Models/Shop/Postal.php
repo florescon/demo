@@ -29,5 +29,4 @@ class Postal extends Model
     protected $casts = [
         'active' => 'boolean',
     ];
-
 }
