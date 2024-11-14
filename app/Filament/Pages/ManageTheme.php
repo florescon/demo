@@ -25,6 +25,7 @@ class ManageTheme extends SettingsPage
         return __('Theme');
     }
 
+
     public function form(Form $form): Form
     {
         return $form
